@@ -1,0 +1,865 @@
+{% extends 'base.html' %} {% block title %}EduSmart Learning | Executive
+Assessment Center{% endblock %} {% block content %} {# Dynamic icon and brand
+layout colors mapping #} {% set icons = { 'Mathematics': {'icon':
+'bi-calculator-fill', 'color': '#4f46e5', 'bg': '#eeebff'}, 'Science': {'icon':
+'bi-flask-fill', 'color': '#0d9488', 'bg': '#ccfbf1'}, 'History': {'icon':
+'bi-hourglass-bottom', 'color': '#b45309', 'bg': '#fef3c7'}, 'English': {'icon':
+'bi-book-half', 'color': '#0284c7', 'bg': '#e0f2fe'}, 'Programming': {'icon':
+'bi-code-square', 'color': '#0f172a', 'bg': '#f1f5f9'}, 'Physics': {'icon':
+'bi-lightning-charge-fill', 'color': '#ea580c', 'bg': '#ffedd5'}, 'Biology':
+{'icon': 'bi-virus2', 'color': '#16a34a', 'bg': '#dcfce7'}, 'default': {'icon':
+'bi-journal-bookmark-fill', 'color': '#64748b', 'bg': '#f1f5f9'} } %}
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    background-color: #f8fafc;
+  }
+  .transition-all {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Quiz Selection Modules styling */
+  .subject-title {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .quiz-module-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 1.5rem;
+    cursor: pointer;
+  }
+  .quiz-module-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(15, 23, 42, 0.06);
+    border-color: #cbd5e1;
+  }
+  .active-quiz-card {
+    border: 2px solid #4f46e5 !important;
+    background-color: #f5f3ff !important;
+  }
+  .icon-square {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  /* Custom radio system customization */
+  .radio-option-card {
+    border: 1.5px solid #e2e8f0 !important;
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 1.15rem;
+    cursor: pointer;
+  }
+  .radio-option-card:hover {
+    border-color: #cbd5e1 !important;
+    background-color: #f8fafc;
+  }
+  .radio-option-card:has(input:checked) {
+    border-color: #4f46e5 !important;
+    background-color: #f5f3ff;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.05);
+  }
+  .radio-option-card input:checked + span {
+    color: #4f46e5 !important;
+    font-weight: 600;
+  }
+
+  /* Question Card Layout */
+  .question-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Grid Side Navigation Map buttons */
+  .nav-grid-btn {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+  }
+  .nav-grid-btn:hover {
+    border-color: #94a3b8;
+    color: #0f172a;
+  }
+  .nav-grid-btn.answered {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+  }
+  .nav-grid-btn.review-marked {
+    background-color: #f59e0b !important;
+    border-color: #d97706 !important;
+    color: #ffffff !important;
+  }
+
+  /* Action Buttons Utilities */
+  .btn-review-toggle {
+    border: 1.5px solid #d97706;
+    color: #b45309;
+    background-color: #fffbeb;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+  }
+  .btn-review-toggle:hover,
+  .btn-review-toggle.active {
+    background-color: #f59e0b;
+    color: #ffffff;
+  }
+
+  /* LaTeX Dynamic Equation Preview Area */
+  .math-preview-box {
+    min-height: 50px;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    padding: 1rem;
+  }
+
+  @keyframes cardEntrance {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in {
+    animation: cardEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+</style>
+
+{# ----------------------------------------------------------------- #} {# ---
+1. QUIZ LIST VIEW (Halaman Pemilihan Modul Kuis) ------------ #} {#
+----------------------------------------------------------------- #} {% if
+grouped_quizzes %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-9">
+      <header class="text-center mb-5">
+        <h1 class="fw-extrabold text-dark mb-2" style="letter-spacing: -0.03em">
+          Quizzes & Practice Tests
+        </h1>
+        <p class="text-muted small">
+          Select an academic core subject module below to customize your
+          learning evaluation session.
+        </p>
+      </header>
+
+      {# Configuration Panel Slide Box #}
+      <div
+        id="selectionPanel"
+        class="card border-0 shadow-sm rounded-4 p-4 mb-5 text-start d-none animate-fade-in"
+        style="background: #ffffff; border: 1px solid #e2e8f0 !important"
+      >
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 id="selectedQuizTitle" class="fw-bold text-dark mb-0">
+            Configure Session Properties
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            onclick="cancelSelection()"
+          ></button>
+        </div>
+        <hr class="text-muted opacity-25" />
+
+        <div id="step-mode">
+          <p
+            class="text-secondary small fw-bold text-uppercase tracking-wider mb-3"
+            style="font-size: 0.7rem"
+          >
+            Select Assessment Format Mode
+          </p>
+          <div class="row g-3">
+            <div class="col-12 col-sm-6">
+              <button
+                type="button"
+                class="btn btn-outline-dark w-100 rounded-3 py-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+                onclick="startQuiz('mcq')"
+              >
+                <i class="bi bi-list-check fs-5"></i> Objective Module (MCQ)
+              </button>
+            </div>
+            <div class="col-12 col-sm-6">
+              <button
+                type="button"
+                class="btn btn-outline-dark w-100 rounded-3 py-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+                onclick="startQuiz('essay')"
+              >
+                <i class="bi bi-pencil-square fs-5"></i> Comprehensive Essay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Subjects Listing Loop Matrix #} {% for subject in subjects %} {% if
+      grouped_quizzes[subject] %}
+      <div class="mb-5">
+        {% set sub_meta = icons.get(subject, icons['default']) %}
+        <h6
+          class="subject-title text-uppercase mb-4 d-flex align-items-center gap-2"
+        >
+          <span
+            class="d-inline-block rounded-circle"
+            style="width: 8px; height: 8px; background-color: {{ sub_meta.color }};"
+          ></span>
+          <i
+            class="bi {{ sub_meta.icon }}"
+            style="color: {{ sub_meta.color }};"
+          ></i>
+          {{ subject }}
+        </h6>
+
+        <div class="row g-4">
+          {% for id, q in grouped_quizzes[subject] %}
+          <div class="col-12 col-sm-6">
+            <div
+              id="quiz-card-{{ id }}"
+              class="quiz-module-card transition-all d-flex align-items-center justify-content-between text-start"
+              onclick="prepareQuiz('{{ url_for('quiz_index', quiz_id=id) }}', '{{ q.title }}', this)"
+            >
+              <div class="d-flex align-items-center">
+                <div
+                  class="icon-square me-3"
+                  style="background-color: {{ sub_meta.bg }}; color: {{ sub_meta.color }};"
+                >
+                  <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-1 text-dark">{{ q.title }}</h6>
+                  <span
+                    class="text-muted small d-inline-flex align-items-center gap-1"
+                  >
+                    <i class="bi bi-clock"></i> {{ q.duration|default('30') }}
+                    Minutes Allocated
+                  </span>
+                </div>
+              </div>
+              <div class="text-muted ps-2">
+                <i class="bi bi-chevron-right fs-5"></i>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+  </div>
+</div>
+
+{# ----------------------------------------------------------------- #} {# ---
+2. QUESTION DETAIL VIEW (Halaman Pengerjaan Soal) ----------- #} {#
+----------------------------------------------------------------- #} {% elif
+quiz %}
+<div
+  class="sticky-top bg-white border-bottom shadow-sm py-3 mb-4"
+  style="z-index: 1020"
+>
+  <div class="container">
+    <div
+      class="d-flex flex-wrap justify-content-between align-items-center gap-3"
+    >
+      <div>
+        <h4 class="fw-extrabold text-dark mb-1" style="letter-spacing: -0.02em">
+          {{ quiz.title }}
+        </h4>
+        <p class="text-muted small mb-0 d-flex align-items-center gap-2">
+          <span
+            class="badge bg-success-subtle text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill fw-bold"
+            >Live Session Active</span
+          >
+          <span
+            >Total Task Units:
+            <strong id="questionCount" class="text-dark">30</strong></span
+          >
+        </p>
+      </div>
+      <div class="d-flex align-items-center">
+        <div
+          class="bg-dark text-white px-4 py-2.5 rounded-4 d-flex align-items-center shadow-sm gap-2"
+        >
+          <i class="bi bi-stopwatch-fill text-warning fs-5 animate-pulse"></i>
+          <span id="timer" class="font-monospace fw-bold fs-5">30:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-4">
+    {# Right Sticky Sidebar Navigation Block Map #}
+    <div class="col-12 col-lg-4 order-lg-2">
+      <div
+        class="card border-0 shadow-sm rounded-4 p-4 sticky-lg-top"
+        style="top: 110px; border: 1px solid #e2e8f0 !important"
+      >
+        <h6
+          class="fw-bold text-dark mb-2 text-uppercase small tracking-wider d-flex align-items-center gap-2"
+        >
+          <i class="bi bi-grid-3x3-gap-fill text-primary"></i> Question
+          Navigation
+        </h6>
+        <p class="text-muted small mb-3">
+          Jump back and forth rapidly between items by clicking the sequence
+          items map below.
+        </p>
+
+        <div id="navigationGrid" class="d-flex flex-wrap gap-2 mb-4"></div>
+
+        <div
+          class="d-flex flex-wrap gap-3 mb-3 text-muted small border-top pt-3"
+          style="font-size: 0.75rem"
+        >
+          <div class="d-flex align-items-center gap-1">
+            <span
+              class="d-inline-block rounded"
+              style="width: 12px; height: 12px; background: #10b981"
+            ></span>
+            Answered
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            <span
+              class="d-inline-block rounded"
+              style="width: 12px; height: 12px; background: #f59e0b"
+            ></span>
+            For Review
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            <span
+              class="d-inline-block rounded border"
+              style="width: 12px; height: 12px; background: #ffffff"
+            ></span>
+            Empty
+          </div>
+        </div>
+
+        <hr class="opacity-10 my-3" />
+
+        <div class="d-grid gap-2">
+          <button
+            type="button"
+            onclick="triggerFormSubmit()"
+            class="btn btn-primary btn-lg rounded-3 py-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 transition-all"
+          >
+            <i class="bi bi-cloud-arrow-up-fill"></i> Submit Examination Task
+          </button>
+          <p
+            class="text-center text-muted small mt-2 mb-0"
+            style="font-size: 0.75rem"
+          >
+            Ensure tracking verification fields are complete before calling
+            submission routines.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {# Left Questionnaire Main List Sheet #}
+    <div class="col-12 col-lg-8 order-lg-1">
+      <form
+        id="quizForm"
+        action="{{ url_for('quiz_index', quiz_id=quiz_id) }}"
+        method="POST"
+      >
+        {% for q in quiz.questions %}
+        <div
+          id="question-anchor-{{ loop.index }}"
+          class="question-card mb-4 animate-fade-in"
+          data-type="{{ q.type }}"
+        >
+          <div class="p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="d-flex gap-2">
+                <span
+                  class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-15 rounded-pill px-3 py-1.5 text-uppercase tracking-wider small fw-bold"
+                  style="font-size: 0.65rem"
+                >
+                  {{ q.type|upper }}
+                </span>
+                {% set level_colors = {'easy': 'bg-success-subtle text-success
+                border border-success border-opacity-25', 'medium':
+                'bg-warning-subtle text-warning border border-warning
+                border-opacity-25', 'hard': 'bg-danger-subtle text-danger border
+                border-danger border-opacity-25'} %}
+                <span
+                  class="badge {{ level_colors.get(q.level|lower, 'bg-secondary-subtle text-secondary') }} rounded-pill px-3 py-1.5 text-uppercase tracking-wider small fw-bold"
+                  style="font-size: 0.65rem"
+                >
+                  {{ q.level|default('General')|upper }}
+                </span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  type="button"
+                  class="btn btn-review-toggle d-inline-flex align-items-center gap-1 transition-all"
+                  onclick="toggleReviewMark('{{ loop.index }}', this)"
+                >
+                  <i class="bi bi-flag"></i> Review Later
+                </button>
+                <span
+                  class="fw-bold text-secondary font-monospace question-number-badge bg-light px-3 py-1.5 rounded-pill small"
+                ></span>
+              </div>
+            </div>
+
+            {# Questionnaire Stem Text Content #}
+            <h5 class="fw-bold text-dark lh-base mb-4 question-text-container">
+              {{ q.text }}
+            </h5>
+
+            {# Render Layer Mapping Based on MCQ vs Essay Criteria #} {% if
+            q.type == 'mcq' %}
+            <div class="d-grid gap-2.5">
+              {% for opt in q.options %}
+              <label
+                class="d-flex align-items-center radio-option-card transition-all"
+              >
+                <div class="form-check m-0 w-100 d-flex align-items-center">
+                  <input
+                    class="form-check-input me-3 flex-shrink-0"
+                    type="radio"
+                    name="{{ q.id }}"
+                    value="{{ opt }}"
+                    id="opt-{{ q.id }}-{{ loop.index }}"
+                    data-quiz-id="{{ quiz_id }}"
+                    required
+                    onchange="markQuestionAnswered(this); saveDraftProgress('{{ q.id }}', this.value)"
+                    style="width: 1.15rem; height: 1.15rem"
+                  />
+                  <span
+                    class="text-dark-emphasis fw-medium text-start flex-grow-1"
+                    style="font-size: 0.95rem"
+                    >{{ opt }}</span
+                  >
+                </div>
+              </label>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="position-relative mb-2">
+              <textarea
+                class="form-control border-2 p-3 rounded-4 shadow-none transition-all essay-textarea"
+                id="mathInput_{{ q.id }}"
+                name="{{ q.id }}"
+                rows="5"
+                required
+                placeholder="Type your structured analytical solution statement here. LaTeX expressions ($inline$ or $$display$$) are fully supported..."
+                oninput="markQuestionAnswered(this); renderMath('mathInput_{{ q.id }}', 'mathPreview_{{ q.id }}'); saveDraftProgress('{{ q.id }}', this.value)"
+              ></textarea>
+            </div>
+
+            <div
+              class="d-flex justify-content-end mb-3 text-muted"
+              style="font-size: 0.75rem"
+            >
+              <span class="me-3" id="wordCount_{{ q.id }}">0 words</span>
+              <span id="charCount_{{ q.id }}">0 characters</span>
+            </div>
+
+            <div class="mt-2">
+              <small
+                class="text-secondary fw-bold text-uppercase d-block mb-1"
+                style="font-size: 0.65rem; letter-spacing: 0.05em"
+                ><i class="bi bi-eye-fill"></i> Mathematical Formula Real-time
+                Preview</small
+              >
+              <div
+                id="mathPreview_{{ q.id }}"
+                class="math-preview-box text-dark"
+              >
+                <span class="text-muted small"
+                  >LaTeX output structures will generate interactively
+                  here...</span
+                >
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+  let targetUrl = "";
+  const QUIZ_DURATION_MINUTES = 30;
+  const reviewStateMap = {}; // Tracker flag ragu-ragu
+
+  // Configuration Setup for Selection Modes
+  function prepareQuiz(url, title, element) {
+    targetUrl = url;
+    document.querySelectorAll(".quiz-module-card").forEach((card) => {
+      card.classList.remove("active-quiz-card");
+    });
+    element.classList.add("active-quiz-card");
+
+    document.getElementById("selectedQuizTitle").textContent =
+      "Configure Track: " + title;
+    const panel = document.getElementById("selectionPanel");
+    panel.classList.remove("d-none");
+    panel.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function cancelSelection() {
+    document.getElementById("selectionPanel").classList.add("d-none");
+    document.querySelectorAll(".quiz-module-card").forEach((card) => {
+      card.classList.remove("active-quiz-card");
+    });
+    targetUrl = "";
+  }
+
+  function startQuiz(mode) {
+    window.location.href = targetUrl + "?mode=" + mode;
+  }
+
+  // BARU! Toggling Function untuk Status Ragu-Ragu (Mark for Review)
+  function toggleReviewMark(index, element) {
+    const navBtn = document.getElementById(`nav-btn-${index}`);
+    if (!navBtn) return;
+
+    reviewStateMap[index] = !reviewStateMap[index];
+
+    if (reviewStateMap[index]) {
+      element.classList.add("active");
+      element.innerHTML = `<i class="bi bi-flag-fill"></i> Flagged`;
+      navBtn.classList.add("review-marked");
+    } else {
+      element.classList.remove("active");
+      element.innerHTML = `<i class="bi bi-flag"></i> Review Later`;
+      navBtn.classList.remove("review-marked");
+
+      // Jika sudah diisi, kembalikan warna ke hijau sukses
+      const card = document.querySelector(`[data-nav-index="${index}"]`);
+      if (card) {
+        const mcqChecked = card.querySelector('input[type="radio"]:checked');
+        const textValue = card.querySelector("textarea")?.value.trim();
+        if (mcqChecked || (textValue && textValue.length > 0)) {
+          navBtn.classList.add("answered");
+        }
+      }
+    }
+  }
+
+  // Active Navigation Status Tracker Node & Advanced Analytics Counter
+  function markQuestionAnswered(element) {
+    const card = element.closest(".question-card");
+    if (!card) return;
+
+    const index = card.getAttribute("data-nav-index");
+    const navBtn = document.getElementById(`nav-btn-${index}`);
+    if (!navBtn) return;
+
+    let isAnswered = false;
+
+    if (element.type === "radio") {
+      isAnswered = true;
+    } else if (element.tagName.toLowerCase() === "textarea") {
+      const text = element.value;
+      isAnswered = text.trim().length > 0;
+
+      // Real-time Text Counter processing Engine
+      const id = element.id.split("_")[1];
+      const chars = text.length;
+      const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+
+      document.getElementById(`wordCount_${id}`).textContent = `${words} words`;
+      document.getElementById(`charCount_${id}`).textContent =
+        `${chars} characters`;
+    }
+
+    if (isAnswered) {
+      if (!reviewStateMap[index]) navBtn.classList.add("answered");
+    } else {
+      navBtn.classList.remove("answered");
+    }
+  }
+
+  // BARU! LocalStorage Core Auto-Save Engine
+  function saveDraftProgress(questionId, value) {
+    localStorage.setItem(`quiz_draft_${questionId}`, value);
+  }
+
+  function loadDraftProgress() {
+    document.querySelectorAll(".question-card textarea").forEach((textarea) => {
+      const qId = textarea.id.split("_")[1];
+      const savedValue = localStorage.getItem(`quiz_draft_${qId}`);
+      if (savedValue) {
+        textarea.value = savedValue;
+        markQuestionAnswered(textarea);
+        renderMath(textarea.id, `mathPreview_${qId}`);
+      }
+    });
+
+    document
+      .querySelectorAll(".question-card input[type='radio']")
+      .forEach((radio) => {
+        const qId = radio.name;
+        const savedValue = localStorage.getItem(`quiz_draft_${qId}`);
+        if (savedValue && radio.value === savedValue) {
+          radio.checked = true;
+          markQuestionAnswered(radio);
+        }
+      });
+  }
+
+  function clearDraftStorage() {
+    document
+      .querySelectorAll(
+        ".question-card textarea, .question-card input[type='radio']",
+      )
+      .forEach((el) => {
+        const qId = el.type === "radio" ? el.name : el.id.split("_")[1];
+        localStorage.removeItem(`quiz_draft_${qId}`);
+      });
+  }
+
+  // Real-time KaTeX LaTeX Live-preview Engine Function
+  function renderMath(inputId, previewId) {
+    const text = document.getElementById(inputId).value;
+    const previewElement = document.getElementById(previewId);
+
+    if (!text.trim()) {
+      previewElement.innerHTML =
+        '<span class="text-muted small">LaTeX output structures will generate interactively here...</span>';
+      return;
+    }
+
+    let displayMode = text.startsWith("$$") && text.endsWith("$$");
+    let cleanText = text;
+    if (displayMode) {
+      cleanText = text.substring(2, text.length - 2);
+    } else if (text.startsWith("$") && text.endsWith("$")) {
+      cleanText = text.substring(1, text.length - 1);
+    }
+
+    try {
+      katex.render(cleanText, previewElement, {
+        throwOnError: false,
+        displayMode: displayMode,
+        trust: true,
+      });
+    } catch (err) {
+      previewElement.innerHTML =
+        '<span class="text-danger small"><i class="bi bi-exclamation-triangle-fill"></i> Syntax structure incomplete</span>';
+    }
+  }
+
+  function triggerFormSubmit() {
+    const form = document.getElementById("quizForm");
+    if (!form) return;
+    if (!form.reportValidity()) return;
+
+    let totalQuestions = 0;
+    let unansweredCount = 0;
+
+    document.querySelectorAll(".question-card").forEach((card) => {
+      if (card.style.display !== "none") {
+        totalQuestions++;
+        const index = card.getAttribute("data-nav-index");
+        const navBtn = document.getElementById(`nav-btn-${index}`);
+
+        // Terhitung belum dijawab jika tidak punya class 'answered' dan juga tidak ditandai review
+        if (
+          navBtn &&
+          !navBtn.classList.contains("answered") &&
+          !navBtn.classList.contains("review-marked")
+        ) {
+          unansweredCount++;
+        }
+      }
+    });
+
+    let alertText =
+      "Are you sure you want to finalize and submit this task execution?";
+    let alertIcon = "question";
+
+    if (unansweredCount > 0) {
+      alertText = `You have left ${unansweredCount} out of ${totalQuestions} questions completely empty. Unsubmitted criteria fields may affect metric results!`;
+      alertIcon = "warning";
+    }
+
+    Swal.fire({
+      title: "Submit Session Sheet?",
+      text: alertText,
+      icon: alertIcon,
+      showCancelButton: true,
+      confirmButtonText: "Yes, Finish Session",
+      cancelButtonText: "Return to Task",
+      customClass: {
+        confirmButton: "btn btn-primary px-4 py-2 rounded-3 fw-bold me-2",
+        cancelButton: "btn btn-light px-4 py-2 rounded-3 fw-bold border",
+      },
+      buttonsStyling: false,
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) executeSubmit();
+    });
+  }
+
+  function executeSubmit() {
+    const form = document.getElementById("quizForm");
+    if (!form) return;
+
+    Swal.fire({
+      title: "Logging Evaluation Data...",
+      text: "Please hold on while the analytical framework processes metrics scores.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    clearDraftStorage(); // Bersihkan draft lokal setelah berhasil submit
+    const formData = new FormData(form);
+    fetch(form.action, { method: "POST", body: formData })
+      .then(() => {
+        window.location.href = "/quiz/results";
+      })
+      .catch((err) => {
+        window.location.href = "/quiz/results";
+      });
+  }
+
+  // Page Window Initialization Bootloader
+  window.onload = function () {
+    const form = document.getElementById("quizForm");
+
+    if (form) {
+      // Hide application standard nav shell to maintain isolation layout
+      const nav = document.querySelector("nav");
+      const footer = document.querySelector("footer");
+      if (nav) nav.style.display = "none";
+      if (footer) footer.style.display = "none";
+
+      // Elements Randomization Engine
+      const cards = Array.from(form.querySelectorAll(".question-card"));
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      cards.forEach((card) => form.appendChild(card));
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get("mode");
+    const navGrid = document.getElementById("navigationGrid");
+    let activeCount = 0;
+    const maxQuestions = 30;
+
+    document.querySelectorAll(".question-card").forEach((card) => {
+      const cardType = card.getAttribute("data-type");
+
+      if (
+        (mode && mode !== "all" && cardType !== mode) ||
+        activeCount >= maxQuestions
+      ) {
+        card.style.display = "none";
+        card
+          .querySelectorAll("input, textarea")
+          .forEach((i) => i.removeAttribute("required"));
+      } else {
+        activeCount++;
+        card.setAttribute("data-nav-index", activeCount);
+        reviewStateMap[activeCount] = false; // Initialize review status maps
+
+        const numberBadge = card.querySelector(".question-number-badge");
+        if (numberBadge) numberBadge.textContent = "Item Unit " + activeCount;
+
+        if (navGrid) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "nav-grid-btn transition-all";
+          btn.id = `nav-btn-${activeCount}`;
+          btn.textContent = activeCount;
+          btn.onclick = () => {
+            const target = document.getElementById(card.getAttribute("id"));
+            if (target)
+              window.scrollTo({
+                top: target.offsetTop - 120,
+                behavior: "smooth",
+              });
+          };
+          navGrid.appendChild(btn);
+        }
+      }
+    });
+
+    if (document.getElementById("questionCount")) {
+      document.getElementById("questionCount").textContent = activeCount;
+    }
+
+    // Load progress draft dari localstorage jika tersedia
+    loadDraftProgress();
+
+    // Standard Countdown Timer Execution Thread
+    const timerDisplay = document.getElementById("timer");
+    if (timerDisplay) {
+      let timeLeft = QUIZ_DURATION_MINUTES * 60;
+
+      const timerInterval = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        timerDisplay.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          document
+            .getElementById("quizForm")
+            ?.querySelectorAll("input, textarea")
+            .forEach((i) => i.removeAttribute("required"));
+          executeSubmit();
+        }
+      }, 1000);
+    }
+  };
+</script>
+{% endblock %}

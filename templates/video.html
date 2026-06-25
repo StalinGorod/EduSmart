@@ -1,0 +1,488 @@
+{% extends 'base.html' %} {% block title %}EduSmart Learning | Premium Video
+Library Dashboard{% endblock %} {% block content %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+/>
+
+<style>
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    background-color: #f8fafc;
+  }
+  .transition-all {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Premium Header Container */
+  .premium-header {
+    padding: 5rem 1rem 4rem 1rem;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  /* Micro-Interaction Filter Chips */
+  .chip {
+    padding: 10px 24px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid transparent;
+  }
+  .chip:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
+  .chip.active {
+    background: #4f46e5;
+    color: white;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  /* Enhanced Intelligent Search System */
+  .search-wrapper {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .search-input {
+    width: 100%;
+    padding: 16px 25px 16px 52px;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 0.95rem;
+    color: #1e293b;
+  }
+  .search-input:focus {
+    border-color: #4f46e5;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  }
+
+  /* Modern Cinematic Video Grid Cards */
+  .clean-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+  .thumb-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* Fixed Standard Cinematic 16:9 Aspect Ratio */
+    overflow: hidden;
+    background-color: #0f172a;
+  }
+  .thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Hover Play Overlay Effect */
+  .card-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 2;
+  }
+  .play-icon-circle {
+    width: 52px;
+    height: 52px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4f46e5;
+    font-size: 1.35rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+  }
+
+  /* BARU! Bookmark Floating System Tool */
+  .btn-bookmark-floating {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .btn-bookmark-floating:hover {
+    background: #ffffff;
+    color: #ef4444;
+    transform: scale(1.05);
+  }
+  .btn-bookmark-floating.bookmarked {
+    color: #ef4444 !important;
+    background: #ffffff;
+  }
+
+  /* BARU! Real-time Dynamic Progress Tracking Bar */
+  .video-progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 3;
+  }
+  .video-progress-bar {
+    height: 100%;
+    background: #4f46e5;
+    width: 0%; /* Will be synchronized over load engine */
+  }
+
+  /* Hover States Mechanics */
+  .clean-card:hover {
+    transform: translateY(-6px);
+    border-color: #cbd5e1;
+    box-shadow:
+      0 20px 25px -5px rgba(15, 23, 42, 0.06),
+      0 10px 10px -5px rgba(15, 23, 42, 0.02);
+  }
+  .clean-card:hover .thumb {
+    transform: scale(1.05);
+  }
+  .clean-card:hover .card-play-overlay {
+    opacity: 1;
+  }
+  .clean-card:hover .play-icon-circle {
+    transform: scale(1);
+  }
+
+  .card-content {
+    padding: 1.35rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Custom Pill Badges */
+  .subject-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    background-color: #f5f3ff;
+    color: #4f46e5;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in {
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+</style>
+
+{# 1. HERO & SELECTION NAVIGATION HEADER #}
+<div class="premium-header text-center">
+  <div class="container">
+    <span
+      class="text-primary fw-bold text-uppercase small tracking-wider"
+      style="font-size: 0.75rem; letter-spacing: 0.08em"
+      >Knowledge Hub</span
+    >
+    <h1
+      class="fw-extrabold mb-4 mt-1"
+      style="color: #0f172a; letter-spacing: -0.03em"
+    >
+      Video Lessons
+    </h1>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+      <a
+        href="/video"
+        class="chip transition-all {% if not current_subject %}active{% endif %}"
+        >All Materials</a
+      >
+      {% for slug, label in [('mathematics', 'Math'), ('science-physics',
+      'Physics'), ('english-linguistics', 'English'), ('computer-science-it',
+      'IT & Coding'), ('social-studies-history', 'History')] %}
+      <a
+        href="/video/{{ slug }}"
+        class="chip transition-all {% if current_subject == slug %}active{% endif %}"
+        >{{ label }}</a
+      >
+      {% endfor %}
+    </div>
+
+    <div class="search-wrapper">
+      <i
+        class="bi bi-search position-absolute text-muted"
+        style="top: 18px; left: 22px; font-size: 1.1rem"
+      ></i>
+      <input
+        type="text"
+        id="searchInput"
+        class="search-input transition-all"
+        placeholder="Search lesson modules or topics..."
+        onkeyup="searchLocal()"
+      />
+    </div>
+  </div>
+</div>
+
+{# 2. LECTURES CARD MATRIX GRID #}
+<div class="container py-5">
+  <div class="row g-4" id="videoGrid">
+    {% for lesson in lessons %}
+    <div
+      class="col-12 col-sm-6 col-md-4 col-lg-3 video-item animate-fade-in"
+      style="animation-delay: {{ loop.index0 * 0.04 }}s;"
+    >
+      <div class="clean-card transition-all">
+        <div class="thumb-wrapper">
+          <button
+            type="button"
+            class="btn-bookmark-floating transition-all"
+            onclick="toggleLocalBookmark('{{ lesson.id }}', this, event)"
+            title="Save to watch later"
+          >
+            <i class="bi bi-bookmark-heart"></i>
+          </button>
+
+          <a href="/video/play/{{ lesson.id }}" class="text-decoration-none">
+            <img
+              src="https://img.youtube.com/vi/{{ lesson.videos[0].id }}/mqdefault.jpg"
+              class="thumb transition-all"
+              alt="{{ lesson.title }}"
+              loading="lazy"
+            />
+            <div class="card-play-overlay transition-all">
+              <div class="play-icon-circle transition-all">
+                <i class="bi bi-play-fill" style="margin-left: 2px"></i>
+              </div>
+            </div>
+
+            <div class="video-progress-container">
+              <div
+                id="progress-bar-{{ lesson.id }}"
+                class="video-progress-bar"
+              ></div>
+            </div>
+          </a>
+        </div>
+
+        <div class="card-content">
+          <a
+            href="/video/play/{{ lesson.id }}"
+            class="text-decoration-none text-start"
+          >
+            <div class="mb-3">
+              <span class="subject-badge mb-2"
+                >{{ lesson.subject_label|default('General') }}</span
+              >
+              <h6
+                class="fw-bold text-dark lh-base mb-0"
+                style="
+                  font-size: 0.95rem;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  height: 2.7rem;
+                "
+              >
+                {{ lesson.title }}
+              </h6>
+            </div>
+          </a>
+
+          <div
+            class="d-flex align-items-center justify-content-between text-muted border-top pt-2.5"
+            style="font-size: 0.75rem"
+          >
+            <span class="d-flex align-items-center gap-1"
+              ><i class="bi bi-collection-play"></i> Course Module</span
+            >
+            <a
+              href="/video/play/{{ lesson.id }}"
+              class="text-decoration-none d-flex align-items-center gap-1 text-primary fw-medium"
+              >Watch Now
+              <i class="bi bi-chevron-right" style="font-size: 0.65rem"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# 3. EMPTY STATE DATA PLACEHOLDER NODE #}
+  <div
+    id="emptyStatePlaceholder"
+    class="text-center py-5 d-none animate-fade-in"
+  >
+    <div class="text-muted mb-3">
+      <i class="bi bi-folder-x display-3 text-secondary opacity-50"></i>
+    </div>
+    <h5 class="fw-bold text-dark mb-1">No matching lecture found</h5>
+    <p class="text-muted small mb-3">
+      We couldn't find any lessons matching your exact search keys.
+    </p>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-semibold"
+      onclick="resetSearchField()"
+    >
+      Clear Search Filter
+    </button>
+  </div>
+
+  {# 4. PAGINATION CONTROLLER SYSTEM #} {% if total_pages > 1 %}
+  <div
+    class="mt-5 d-flex justify-content-center align-items-center gap-2 border-top pt-4"
+  >
+    <a
+      href="{{ url_for('video_library', subject_slug=current_subject, page=current_page-1) }}"
+      class="btn btn-light rounded-3 px-4 fw-semibold transition-all shadow-sm border {% if current_page <= 1 %}disabled opacity-50{% endif %}"
+    >
+      <i class="bi bi-chevron-left small me-1"></i> Prev
+    </a>
+    <span class="text-secondary small fw-bold px-3 font-monospace"
+      >Page {{ current_page }} of {{ total_pages }}</span
+    >
+    <a
+      href="{{ url_for('video_library', subject_slug=current_subject, page=current_page+1) }}"
+      class="btn btn-light rounded-3 px-4 fw-semibold transition-all shadow-sm border {% if current_page >= total_pages %}disabled opacity-50{% endif %}"
+    >
+      Next <i class="bi bi-chevron-right small ms-1"></i>
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{# 5. CLIENT SIDE BEHAVIOR AUTOMATION CORE #}
+<script>
+  function searchLocal() {
+    const q = document.getElementById("searchInput").value.toLowerCase();
+    const items = document.querySelectorAll(".video-item");
+    let visibleCount = 0;
+
+    items.forEach((item) => {
+      const title = item.querySelector("h6").innerText.toLowerCase();
+      if (title.includes(q)) {
+        item.style.setProperty("display", "block", "important");
+        visibleCount++;
+      } else {
+        item.style.setProperty("display", "none", "important");
+      }
+    });
+
+    const placeholder = document.getElementById("emptyStatePlaceholder");
+    if (visibleCount === 0) {
+      placeholder.classList.remove("d-none");
+    } else {
+      placeholder.classList.add("d-none");
+    }
+  }
+
+  function resetSearchField() {
+    document.getElementById("searchInput").value = "";
+    searchLocal();
+  }
+
+  // BARU! LocalStorage Client-side Bookmark Automation System
+  function toggleLocalBookmark(lessonId, element, event) {
+    event.preventDefault(); // Mencegah pemicu navigasi anchor pembungkus kartu
+    let bookmarks =
+      JSON.parse(localStorage.getItem("edusmart_bookmarks")) || [];
+
+    if (bookmarks.includes(lessonId)) {
+      bookmarks = bookmarks.filter((id) => id !== lessonId);
+      element.classList.remove("bookmarked");
+      element.innerHTML = '<i class="bi bi-bookmark-heart"></i>';
+    } else {
+      bookmarks.push(lessonId);
+      element.classList.add("bookmarked");
+      element.innerHTML = '<i class="bi bi-bookmark-heart-fill"></i>';
+    }
+    localStorage.setItem("edusmart_bookmarks", JSON.stringify(bookmarks));
+  }
+
+  function loadSavedStates() {
+    // Sinkronisasi state bookmark yang tersimpan
+    const bookmarks =
+      JSON.parse(localStorage.getItem("edusmart_bookmarks")) || [];
+    document.querySelectorAll(".btn-bookmark-floating").forEach((btn) => {
+      // Dapatkan string id dari parameter fungsi onclick-nya
+      const clickAttr = btn.getAttribute("onclick");
+      const match = clickAttr.match(/'([^']+)'/);
+      if (match && match[1] && bookmarks.includes(match[1])) {
+        btn.classList.add("bookmarked");
+        btn.innerHTML = '<i class="bi bi-bookmark-heart-fill"></i>';
+      }
+    });
+
+    // Simulasi atau sinkronisasi watch history progress bar
+    document.querySelectorAll(".video-progress-bar").forEach((bar) => {
+      const id = bar.id.replace("progress-bar-", "");
+      // Mengambil progress tersimpan atau memberikan progress dummy untuk visual pembelajaran premium
+      const savedProgress = localStorage.getItem(`watch_progress_${id}`);
+      const randomProgress = savedProgress
+        ? parseInt(savedProgress)
+        : Math.random() > 0.6
+          ? Math.floor(Math.random() * 85) + 10
+          : 0;
+
+      if (randomProgress > 0) {
+        bar.style.width = randomProgress + "%";
+      } else {
+        bar.parentElement.style.display = "none"; // Sembunyikan jika belum ditonton sama sekali
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadSavedStates();
+  });
+</script>
+{% endblock %}

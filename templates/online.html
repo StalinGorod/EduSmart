@@ -1,0 +1,446 @@
+{% extends 'base.html' %} {% block title %}Online Learning Center{% endblock %}
+{% block content %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+/>
+
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #eeebff;
+    --bg-main: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    color: var(--text-dark);
+  }
+
+  /* Premium Banner Hero */
+  .hero-section {
+    background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
+    color: white;
+    padding: 4rem 1rem;
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 3rem;
+    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.15);
+  }
+
+  /* Dashboard Feature Cards */
+  .feature-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 2.25rem 1.5rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    cursor: pointer;
+    text-align: center;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px);
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.03);
+  }
+  .icon-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    margin: 0 auto 1.25rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    transition: 0.3s;
+  }
+  .feature-card:hover .icon-box {
+    background: var(--primary);
+    color: #ffffff;
+  }
+
+  /* Sleek Notification Toast */
+  .toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1060;
+  }
+  .custom-toast {
+    background: #ffffff;
+    border-left: 4px solid var(--primary);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    padding: 1rem 1.25rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 280px;
+    animation: slideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s ease;
+  }
+  @keyframes slideIn {
+    from {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Modern Grid Calendar */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  .calendar-header-cell {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding-bottom: 4px;
+  }
+  .calendar-date {
+    height: 95px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+  }
+  .calendar-date:hover {
+    background: #fafafa;
+    border-color: #cbd5e1;
+  }
+  .has-event {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+  }
+  .event-pill {
+    font-size: 0.7rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Chat Room Interface */
+  .chat-box {
+    height: 350px;
+    overflow-y: auto;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+  .chat-bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    max-width: 80%;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+  }
+  .chat-bubble-incoming {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+  }
+  .chat-bubble-outgoing {
+    background: var(--primary);
+    color: #ffffff;
+  }
+
+  /* Custom Modal Container */
+  .modal-content {
+    border-radius: 24px;
+    border: none;
+    padding: 0.5rem;
+  }
+  .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+  }
+</style>
+
+<div class="toast-container" id="toast-box"></div>
+
+<div class="hero-section text-center">
+  <h1 class="fw-bold mb-2">Welcome to Online Classes 👋</h1>
+  <p class="opacity-75 mb-0">
+    Expand your knowledge and streamline your learning activities today.
+  </p>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-4 justify-content-center">
+    {% for item in [('Join Live', 'bi-camera-video', 'live-modal'),
+    ('Schedules', 'bi-calendar3', 'schedule-modal'), ('Discussion',
+    'bi-chat-dots', 'chat-modal'), ('Recorded', 'bi-play-btn',
+    'recorded-modal')] %}
+    <div class="col-6 col-lg-3">
+      <div
+        class="feature-card shadow-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#{{ item.2 }}"
+      >
+        <div class="icon-box"><i class="bi {{ item.1 }}"></i></div>
+        <h6 class="fw-bold m-0 text-dark">{{ item.0 }}</h6>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="modal fade" id="live-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header">
+        <h5 class="fw-bold m-0">
+          <i class="bi bi-broadcast me-2 text-danger"></i>Active Live Sessions
+        </h5>
+        <button
+          type="button"
+          class="btn-close shadow-none"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="d-flex flex-column gap-2">
+          {% for s in [('Quantum Physics', 'Mr. Albert'), ('Data Science', 'Dr.
+          Smith')] %}
+          <div
+            class="p-3 border rounded-3 d-flex justify-content-between align-items-center bg-white"
+          >
+            <div>
+              <span class="fw-bold text-dark d-block mb-1">{{ s.0 }}</span>
+              <small class="text-muted"
+                ><i class="bi bi-person me-1"></i>{{ s.1 }}</small
+              >
+            </div>
+            <button class="btn btn-sm btn-primary rounded-pill px-3">
+              Join
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="schedule-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header">
+        <h5 class="fw-bold m-0">
+          <i class="bi bi-calendar-event me-2 text-primary"></i>June 2026
+          Schedule
+        </h5>
+        <button
+          type="button"
+          class="btn-close shadow-none"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="calendar-grid">
+          {% for day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
+          <div class="calendar-header-cell">{{ day }}</div>
+          {% endfor %} {% set schedule = { 4: [{'title': 'Physics', 'time':
+          '09:00'}], 15: [{'title': 'Coding', 'time': '09:00'}], 25: [{'title':
+          'Workshop', 'time': '14:00'}] } %} {% for i in range(1, 31) %}
+          <div
+            class="calendar-date {% if i in schedule %}has-event{% endif %}"
+            onclick="showDetails('{{ i }}', {{ schedule.get(i, []) | tojson }})"
+          >
+            <span class="fw-bold small text-secondary">{{ i }}</span>
+            {% for item in schedule.get(i, []) %}
+            <span class="event-pill text-truncate">{{ item.title }}</span>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="chat-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header">
+        <h5 class="fw-bold m-0">
+          <i class="bi bi-chat-left-text me-2 text-primary"></i>Class Discussion
+        </h5>
+        <button
+          type="button"
+          class="btn-close shadow-none"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="chat-box mb-3 d-flex flex-column gap-3" id="chat-msgs">
+          <div class="d-flex flex-column align-items-start">
+            <small class="text-muted mb-1 px-1" style="font-size: 0.75rem"
+              >Mr. Albert</small
+            >
+            <div class="chat-bubble chat-bubble-incoming">
+              Any questions regarding the calculation details?
+            </div>
+          </div>
+        </div>
+        <div class="input-group bg-light rounded-3 p-1 border">
+          <input
+            type="text"
+            class="form-control border-0 bg-transparent shadow-none"
+            id="chat-input"
+            placeholder="Type your message here..."
+            onkeypress="handleChatEnter(event)"
+          />
+          <button class="btn btn-primary rounded-3 px-4" onclick="sendChat()">
+            <i class="bi bi-send"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="recorded-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header">
+        <h5 class="fw-bold m-0">
+          <i class="bi bi-collection-play me-2 text-primary"></i>Recorded
+          Lessons
+        </h5>
+        <button
+          type="button"
+          class="btn-close shadow-none"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="d-flex flex-column gap-2">
+          {% for v in [('Intro to Quantum Mechanics', '24 min'),
+          ('Thermodynamics Review', '45 min')] %}
+          <a
+            href="#"
+            class="p-3 border rounded-3 d-flex justify-content-between align-items-center bg-white text-decoration-none list-item-interactive"
+          >
+            <div class="d-flex align-items-center gap-3">
+              <div class="fs-4 text-primary">
+                <i class="bi bi-play-circle-fill"></i>
+              </div>
+              <div>
+                <span class="fw-bold text-dark d-block">{{ v.0 }}</span>
+                <small class="text-muted"
+                  ><i class="bi bi-clock me-1"></i>{{ v.1 }}</small
+                >
+              </div>
+            </div>
+            <i class="bi bi-chevron-right text-muted"></i>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body p-4 text-center">
+        <h6 id="m-date" class="text-primary fw-bold mb-3"></h6>
+        <div id="m-list" class="d-flex flex-column gap-2"></div>
+        <button
+          class="btn btn-light w-100 mt-4 rounded-pill border fw-semibold text-secondary"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showNotification(msg) {
+    let box = document.getElementById("toast-box");
+    let t = document.createElement("div");
+    t.className = "custom-toast";
+    t.innerHTML = `<i class="bi bi-check-circle-fill text-primary"></i> <span class="small fw-semibold text-secondary">${msg}</span>`;
+    box.appendChild(t);
+
+    setTimeout(() => {
+      t.style.opacity = "0";
+      t.style.transform = "translateY(-10px)";
+      setTimeout(() => t.remove(), 400);
+    }, 3000);
+  }
+
+  function showDetails(d, items) {
+    document.getElementById("m-date").innerText = "June " + d + ", 2026";
+    document.getElementById("m-list").innerHTML =
+      items.length > 0
+        ? items
+            .map(
+              (i) =>
+                `<div class="d-flex justify-content-between align-items-center p-2.5 bg-light rounded-3 border">
+                  <div class="text-start"><strong class="d-block small">${i.title}</strong><small class="text-muted">${i.time}</small></div>
+                  <button class="btn btn-sm btn-primary rounded-circle p-1 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="showNotification('Reminder set for ${i.title}')"><i class="bi bi-bell"></i></button>
+                </div>`,
+            )
+            .join("")
+        : `<p class="text-muted small my-2">No alternative schedule assigned.</p>`;
+    new bootstrap.Modal(document.getElementById("detailModal")).show();
+  }
+
+  function sendChat() {
+    let input = document.getElementById("chat-input");
+    if (input.value.trim() !== "") {
+      document.getElementById("chat-msgs").innerHTML += `
+        <div class="d-flex flex-column align-items-end">
+          <small class="text-muted mb-1 px-1" style="font-size: 0.75rem;">You</small>
+          <div class="chat-bubble chat-bubble-outgoing">${input.value}</div>
+        </div>`;
+      let chatBox = document.getElementById("chat-msgs");
+      chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = "";
+      showNotification("Message transmitted!");
+    }
+  }
+
+  function handleChatEnter(e) {
+    if (e.key === "Enter") {
+      sendChat();
+    }
+  }
+</script>
+{% endblock %}

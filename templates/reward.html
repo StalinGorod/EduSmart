@@ -1,0 +1,767 @@
+{% extends 'base.html' %} {% block title %}Online Learning Center | Gamification
+& Rewards{% endblock %} {% block content %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #eeebff;
+    --secondary: #06b6d4;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --border-color: #e2e8f0;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+  }
+
+  /* Hero Banner Upgraded */
+  .reward-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #4f46e5 50%, #7c3aed 100%);
+    color: white;
+    padding: 4rem 1.5rem;
+    border-radius: 24px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .reward-banner::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    background: rgba(6, 182, 212, 0.15);
+    border-radius: 50%;
+    filter: blur(80px);
+  }
+
+  .points-display {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 24px;
+    padding: 1.25rem 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+  .points-display:hover {
+    transform: scale(1.05);
+  }
+
+  /* Card Glassmorphism Dashboard */
+  .reward-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .reward-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    border-color: #cbd5e1;
+  }
+
+  /* Streak Tracker Dots */
+  .streak-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+  }
+  .streak-day {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .streak-day.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+
+  /* Badge Custom Filters */
+  .nav-pills-custom .nav-link {
+    color: var(--text-muted);
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.5rem 1.25rem;
+    transition: 0.2s;
+  }
+  .nav-pills-custom .nav-link.active {
+    background-color: var(--primary-light);
+    color: var(--primary) !important;
+  }
+
+  .badge-item {
+    text-align: center;
+    padding: 1.25rem;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid transparent;
+    transition: 0.3s;
+    height: 100%;
+  }
+  .badge-item:hover {
+    background: #ffffff;
+    border-color: var(--border-color);
+    transform: scale(1.03);
+  }
+  .badge-icon-wrapper {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    margin: 0 auto 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  }
+  .badge-locked {
+    filter: grayscale(1) opacity(0.4);
+  }
+
+  /* Reward Store Styles */
+  .store-item-card {
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: 0.3s;
+    background: #ffffff;
+  }
+  .store-item-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+  }
+  .store-icon-bg {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    background: #f8fafc;
+  }
+
+  /* Leaderboard Styles */
+  .leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    transition: 0.2s;
+  }
+  .leaderboard-item.current-user {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.08);
+  }
+  .rank-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+  .rank-1 {
+    background: #fef08a;
+    color: #a16207;
+    box-shadow: 0 4px 10px rgba(234, 179, 8, 0.25);
+  }
+  .rank-2 {
+    background: #e2e8f0;
+    color: #475569;
+  }
+  .rank-3 {
+    background: #ffedd5;
+    color: #c2410c;
+  }
+
+  /* Notification Toast Layout */
+  .toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1100;
+  }
+  .reward-toast {
+    background: #ffffff;
+    border-left: 5px solid var(--success);
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.12);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 320px;
+    animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes slideIn {
+    from {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+</style>
+
+<div class="toast-container" id="toast-box"></div>
+
+<div class="reward-banner text-center">
+  <h1 class="fw-extrabold mb-2 text-white">
+    Your Gamification & Rewards Center 🏆
+  </h1>
+  <p class="opacity-75 mb-4 text-white">
+    Unlock badges, climb the rank ladders, and claim premium benefits.
+  </p>
+
+  <div class="points-display">
+    <div class="fs-2 text-warning">
+      <i class="bi bi-lightning-charge-fill"></i>
+    </div>
+    <div class="text-start text-white">
+      <span
+        class="d-block text-uppercase fw-bold opacity-50 tracking-wider"
+        style="font-size: 0.65rem"
+        >Total Available Balance</span
+      >
+      <h3 class="fw-extrabold m-0" id="user-points-balance">
+        2,450 <span class="fs-6 fw-normal text-white-50">PTS</span>
+      </h3>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 pb-5">
+  <div class="col-lg-8">
+    <div class="reward-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold m-0 text-dark">
+          <i class="bi bi-fire text-danger me-2"></i>Daily Login Streak
+        </h5>
+        <span class="fw-bold text-success" id="streak-count"
+          >6 Days Streak!</span
+        >
+      </div>
+
+      <div class="streak-container mb-4">
+        <div class="streak-day active">Mon</div>
+        <div class="streak-day active">Tue</div>
+        <div class="streak-day active">Wed</div>
+        <div class="streak-day active">Thu</div>
+        <div class="streak-day active">Fri</div>
+        <div class="streak-day active">Sat</div>
+        <div class="streak-day text-secondary" id="day-7-dot">Sun</div>
+      </div>
+
+      <hr class="text-muted opacity-25 my-4" />
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold m-0 text-dark">
+          <i class="bi bi-rocket-takeoff me-2 text-primary"></i>Active Learning
+          Challenges
+        </h5>
+        <span class="badge bg-light text-primary border fw-semibold"
+          >June 2026 Edition</span
+        >
+      </div>
+
+      <div class="d-flex flex-column gap-3">
+        <div class="p-3 border rounded-4 bg-white">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h6 class="fw-bold text-dark mb-1">Quantum Marathoner</h6>
+              <small class="text-muted d-block mb-1"
+                >Complete 5 Quantum Physics modules this week.</small
+              >
+            </div>
+            <span
+              class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1 fw-bold"
+              style="font-size: 0.75rem"
+              >+500 PTS</span
+            >
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="progress flex-grow-1">
+              <div class="progress-bar bg-primary" style="width: 60%"></div>
+            </div>
+            <small class="fw-bold text-secondary text-nowrap"
+              >3 / 5 Lessons</small
+            >
+          </div>
+        </div>
+
+        <div class="p-3 border rounded-4 bg-white">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h6 class="fw-bold text-dark mb-1">Unstoppable Streak</h6>
+              <small class="text-muted d-block mb-1"
+                >Complete at least 1 lesson daily for 7 consecutive days.</small
+              >
+            </div>
+            <span
+              class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1 fw-bold"
+              style="font-size: 0.75rem"
+              >+300 PTS</span
+            >
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="progress flex-grow-1">
+              <div
+                class="progress-bar bg-success"
+                id="challenge-streak-progress"
+                style="width: 85%"
+              ></div>
+            </div>
+            <small
+              class="fw-bold text-secondary text-nowrap"
+              id="challenge-streak-txt"
+              >6 / 7 Days</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reward-card">
+      <div
+        class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4"
+      >
+        <h5 class="fw-bold m-0 text-dark">
+          <i class="bi bi-patch-check me-2 text-success"></i>Achievement Badges
+        </h5>
+
+        <ul
+          class="nav nav-pills nav-pills-custom bg-light p-1 rounded-3"
+          id="badgeTabs"
+          role="tablist"
+        >
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active btn-sm"
+              id="all-badges-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#all-badges"
+              type="button"
+              role="tab"
+            >
+              All
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link btn-sm"
+              id="unlocked-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#unlocked-badges"
+              type="button"
+              role="tab"
+            >
+              Unlocked (3)
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tab-content" id="badgeTabsContent">
+        <div class="tab-pane fade show active" id="all-badges" role="tabpanel">
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <div class="badge-item">
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #e0f2fe; color: #0284c7"
+                >
+                  <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h6 class="fw-bold small mb-1 text-dark">First Step</h6>
+                <span class="text-muted d-block" style="font-size: 0.7rem"
+                  >First Lesson Complete</span
+                >
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="badge-item">
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #fef3c7; color: #d97706"
+                >
+                  <i class="bi bi-fire"></i>
+                </div>
+                <h6 class="fw-bold small mb-1 text-dark">3-Day Streak</h6>
+                <span class="text-muted d-block" style="font-size: 0.7rem"
+                  >Active 3 days in a row</span
+                >
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="badge-item">
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #dcfce7; color: #16a34a"
+                >
+                  <i class="bi bi-chat-heart-fill"></i>
+                </div>
+                <h6 class="fw-bold small mb-1 text-dark">Forum Peer</h6>
+                <span class="text-muted d-block" style="font-size: 0.7rem"
+                  >Reply to 5 threads</span
+                >
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div
+                class="badge-item badge-locked"
+                data-bs-toggle="tooltip"
+                title="Unlock by finishing 20 core lessons"
+              >
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #f1f5f9; color: #94a3b8"
+                >
+                  <i class="bi bi-trophy-fill"></i>
+                </div>
+                <h6 class="fw-bold small mb-1 text-secondary">Grandmaster</h6>
+                <span class="text-muted d-block" style="font-size: 0.7rem"
+                  >Finish 20 courses</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="unlocked-badges" role="tabpanel">
+          <div class="row g-3">
+            <div class="col-6 col-md-4">
+              <div class="badge-item text-center">
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #e0f2fe; color: #0284c7"
+                >
+                  <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h6 class="fw-bold small mb-1">First Step</h6>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="badge-item text-center">
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #fef3c7; color: #d97706"
+                >
+                  <i class="bi bi-fire"></i>
+                </div>
+                <h6 class="fw-bold small mb-1">3-Day Streak</h6>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="badge-item text-center">
+                <div
+                  class="badge-icon-wrapper"
+                  style="background: #dcfce7; color: #16a34a"
+                >
+                  <i class="bi bi-chat-heart-fill"></i>
+                </div>
+                <h6 class="fw-bold small mb-1">Forum Peer</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reward-card">
+      <h5 class="fw-bold mb-2 text-dark">
+        <i class="bi bi-bag-heart text-primary me-2"></i>Premium Reward Store
+      </h5>
+      <p class="text-muted small mb-4">
+        Redeem your hard-earned learning points for verified exclusive academic
+        perks.
+      </p>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="store-item-card p-3">
+            <div class="store-icon-bg rounded-4 text-primary mb-3">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold m-0 text-dark">Verified E-Certificate</h6>
+              <span class="badge bg-primary-subtle text-primary fw-bold"
+                >500 PTS</span
+              >
+            </div>
+            <p class="text-muted xsmall mb-3" style="font-size: 0.75rem">
+              Get official printable credentials for completed standard paths.
+            </p>
+            <button
+              class="btn btn-outline-primary btn-sm w-100 rounded-pill fw-semibold"
+              onclick="claimRewardStore('Verified E-Certificate', 500)"
+            >
+              Redeem Benefit
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="store-item-card p-3">
+            <div class="store-icon-bg rounded-4 text-success mb-3">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold m-0 text-dark">1-on-1 Mentor Session</h6>
+              <span class="badge bg-primary-subtle text-primary fw-bold"
+                >1,500 PTS</span
+              >
+            </div>
+            <p class="text-muted xsmall mb-3" style="font-size: 0.75rem">
+              30-minute private audio/video consultation with industry experts.
+            </p>
+            <button
+              class="btn btn-outline-primary btn-sm w-100 rounded-pill fw-semibold"
+              onclick="claimRewardStore('1-on-1 Mentor Session', 1500)"
+            >
+              Redeem Benefit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="reward-card">
+      <h5 class="fw-bold mb-1 text-dark">
+        <i class="bi bi-graph-up-arrow me-2 text-secondary"></i>Leaderboard Rank
+      </h5>
+      <p class="text-muted small mb-4">
+        Leaderboard refreshes automatically every Sunday.
+      </p>
+
+      <div class="leaderboard-list">
+        <div class="leaderboard-item">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rank-badge rank-1">1</div>
+            <div>
+              <span class="fw-bold text-dark d-block small">Sarah Jenkins</span>
+              <small class="text-muted" style="font-size: 0.75rem"
+                >12 lessons completed</small
+              >
+            </div>
+          </div>
+          <span class="fw-bold text-dark small"
+            >3,120
+            <span class="text-muted" style="font-size: 0.65rem">PTS</span></span
+          >
+        </div>
+
+        <div class="leaderboard-item">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rank-badge rank-2">2</div>
+            <div>
+              <span class="fw-bold text-dark d-block small">Fikri Syah</span>
+              <small class="text-muted" style="font-size: 0.75rem"
+                >10 lessons completed</small
+              >
+            </div>
+          </div>
+          <span class="fw-bold text-dark small"
+            >2,890
+            <span class="text-muted" style="font-size: 0.65rem">PTS</span></span
+          >
+        </div>
+
+        <div class="leaderboard-item current-user">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rank-badge rank-3">3</div>
+            <div>
+              <span class="fw-bold text-primary d-block small"
+                >You (Alex)
+                <span
+                  class="badge bg-primary text-white ms-1"
+                  style="font-size: 0.55rem"
+                  >YOU</span
+                ></span
+              >
+              <small class="text-muted" style="font-size: 0.75rem"
+                >8 lessons completed</small
+              >
+            </div>
+          </div>
+          <span class="fw-bold text-primary small" id="leaderboard-user-pts"
+            >2,450
+            <span class="text-muted" style="font-size: 0.65rem">PTS</span></span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="reward-card text-center bg-light border-dashed">
+      <h6 class="fw-bold text-dark mb-2">Simulate Accomplishments</h6>
+      <p class="text-muted small mb-3">
+        Simulate instant lesson completion to view automated point increases &
+        streak adjustments.
+      </p>
+
+      <div class="d-flex flex-column gap-2">
+        <button
+          class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm"
+          onclick="simulateLessonCompletion()"
+        >
+          <i class="bi bi-plus-circle me-2"></i>Complete 1 Lesson (+150 PTS)
+        </button>
+        <button
+          class="btn btn-outline-success w-100 rounded-pill fw-semibold btn-sm"
+          onclick="simulateDailyClaim()"
+        >
+          <i class="bi bi-calendar-check me-2"></i>Claim Day 7 Streak (+300 PTS)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let basePoints = 2450;
+  let hasClaimedStreak = false;
+
+  // Fungsi Modular Pembentuk Toast Notifikasi
+  function showRewardNotification(title, sub, type = "success") {
+    const box = document.getElementById("toast-box");
+    const t = document.createElement("div");
+    t.className = "reward-toast";
+    if (type === "danger") {
+      t.style.borderLeftColor = "var(--danger)";
+    }
+
+    t.innerHTML = `
+      <div class="fs-4 ${type === "danger" ? "text-danger" : "text-success"}">
+        <i class="bi ${type === "danger" ? "bi-exclamation-triangle-fill" : "bi-patch-check-fill"}"></i>
+      </div>
+      <div>
+        <strong class="d-block text-dark small">${title}</strong>
+        <small class="text-muted" style="font-size:0.8rem;">${sub}</small>
+      </div>
+    `;
+    box.appendChild(t);
+
+    setTimeout(() => {
+      t.style.opacity = "0";
+      t.style.transform = "translateY(-10px)";
+      setTimeout(() => t.remove(), 400);
+    }, 4500);
+  }
+
+  // Refaktor Pembaruan Element Teks Poin
+  function updateVisualPoints() {
+    document.getElementById("user-points-balance").innerHTML =
+      `${basePoints.toLocaleString()} <span class="fs-6 fw-medium text-white-50">PTS</span>`;
+    document.getElementById("leaderboard-user-pts").innerHTML =
+      `${basePoints.toLocaleString()} <span class="text-muted" style="font-size: 0.65rem">PTS</span>`;
+  }
+
+  // Aksi 1: Menyelesaikan Pelajaran biasa
+  function simulateLessonCompletion() {
+    const gainedPoints = 150;
+    basePoints += gainedPoints;
+    updateVisualPoints();
+
+    showRewardNotification(
+      "Lesson Completed! 🎉",
+      `Verified. +${gainedPoints} PTS credited safely to your profile.`,
+    );
+  }
+
+  // Aksi 2: Simulasi Klaim Streak Hari ke-7
+  function simulateDailyClaim() {
+    if (hasClaimedStreak) {
+      showRewardNotification(
+        "Already Claimed",
+        "You have already completed your weekly streak calendar.",
+        "danger",
+      );
+      return;
+    }
+
+    const streakPoints = 300;
+    basePoints += streakPoints;
+    hasClaimedStreak = true;
+
+    // Ubah visual komponen kalender minggu & progress bar challenge
+    document.getElementById("day-7-dot").className = "streak-day active";
+    document.getElementById("streak-count").innerText = "7 Days Streak Max! 🔥";
+    document.getElementById("challenge-streak-progress").style.width = "100%";
+    document.getElementById("challenge-streak-txt").innerText =
+      "7 / 7 Days (Done)";
+
+    updateVisualPoints();
+    showRewardNotification(
+      "Weekly Streak Unlocked! ⚡",
+      `Perfect learning habits. +${streakPoints} PTS added to your wallet.`,
+    );
+  }
+
+  // Aksi 3: Penukaran Hadiah di Store
+  function claimRewardStore(itemName, cost) {
+    if (basePoints < cost) {
+      showRewardNotification(
+        "Insufficient Points Balance",
+        `You need ${cost - basePoints} more points to unlock this reward item.`,
+        "danger",
+      );
+      return;
+    }
+
+    basePoints -= cost;
+    updateVisualPoints();
+    showRewardNotification(
+      "Reward Successfully Redeemed! 🎁",
+      `Voucher for "${itemName}" has been pushed to your email box.`,
+    );
+  }
+
+  // Inisialisasi Tooltip Bootstrap bawaan
+  document.addEventListener("DOMContentLoaded", function () {
+    const tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+    );
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>
+{% endblock %}

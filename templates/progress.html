@@ -1,0 +1,680 @@
+{% extends 'base.html' %} {% block title %}EduSmart Learning | Executive
+Analytics Center{% endblock %} {% block content %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #f8fafc;
+  }
+
+  .dashboard-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Neo-Minimalism Premium Card */
+  .custom-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 2rem;
+    height: 100%;
+    box-shadow:
+      0 4px 6px -1px rgba(15, 23, 42, 0.01),
+      0 2px 4px -1px rgba(15, 23, 42, 0.01);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .custom-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 25px -5px rgba(15, 23, 42, 0.05),
+      0 10px 10px -5px rgba(15, 23, 42, 0.03);
+    border-color: #cbd5e1;
+  }
+
+  /* KPI Card Design Enhancement */
+  .kpi-icon-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  /* Navigation Pills Refinement */
+  .nav-pills-premium .nav-link {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    transition: 0.2s;
+  }
+  .nav-pills-premium .nav-link.active {
+    background-color: #eeebff;
+    color: #4f46e5 !important;
+    border-color: rgba(79, 70, 229, 0.15);
+  }
+
+  /* Action Buttons */
+  .action-circle-btn {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    color: #475569;
+  }
+  .action-circle-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+  }
+  .pulse-dot {
+    position: absolute;
+    top: 10px;
+    right: 11px;
+    width: 9px;
+    height: 9px;
+    background: #ef4444;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 260px;
+    width: 100%;
+  }
+
+  /* AI Card Banner Styling */
+  .ai-insight-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    border-radius: 24px;
+    padding: 2rem;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+  }
+  .ai-insight-banner::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 50%;
+    filter: blur(60px);
+  }
+
+  /* Timeline Decorator */
+  .timeline-stream {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .timeline-stream::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: #e2e8f0;
+  }
+  .timeline-node {
+    position: relative;
+    margin-bottom: 1.75rem;
+  }
+  .timeline-node::before {
+    content: "";
+    position: absolute;
+    left: calc(-1.5rem - 4px);
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4f46e5;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+
+  .table th {
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 767px) {
+    .header-group {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 1.25rem;
+    }
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
+
+<div class="dashboard-wrapper py-5 px-3 px-md-4" id="dashboard-content">
+  <!-- Header & Toolbar Section -->
+  <div
+    class="d-flex justify-content-between align-items-center mb-5 pb-2 header-group"
+  >
+    <div>
+      <h1
+        class="fw-extrabold mb-1"
+        style="color: #0f172a; letter-spacing: -0.03em"
+      >
+        Progress Tracker
+      </h1>
+      <p class="text-muted mb-0 small">
+        Real-time performance evaluation and executive predictive indicators.
+      </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-3 header-actions">
+      <!-- Timeframe Selector Tab -->
+      <ul
+        class="nav nav-pills nav-pills-premium bg-white p-1.5 rounded-3 border"
+        id="timeframeTabs"
+      >
+        <li class="nav-item">
+          <button class="nav-link active" onclick="changeTimeframe('month')">
+            This Month
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="changeTimeframe('all')">
+            All Time
+          </button>
+        </li>
+      </ul>
+
+      <!-- Notification Center -->
+      <div class="dropdown">
+        <button class="action-circle-btn" data-bs-toggle="dropdown">
+          <i class="bi bi-bell fs-5"></i>
+          <span class="pulse-dot"></span>
+        </button>
+        <div
+          class="dropdown-menu dropdown-menu-end p-3 shadow-lg border-0 mt-2"
+          style="width: 320px; border-radius: 16px"
+        >
+          <h6 class="fw-bold mb-3 text-dark d-flex align-items-center">
+            <i class="bi bi-cpu me-2 text-primary"></i>Smart Insights
+          </h6>
+          <div class="list-group list-group-flush">
+            <div
+              class="list-group-item px-0 py-2 border-0 d-flex align-items-start gap-3"
+            >
+              <div class="p-2 bg-light rounded-3 text-primary">
+                <i class="bi bi-code-slash fs-5"></i>
+              </div>
+              <div>
+                <small class="d-block fw-bold text-dark"
+                  >Master Recursion</small
+                >
+                <small class="text-muted d-block" style="font-size: 0.75rem"
+                  >Structural code patterns optimized.</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Engine Button -->
+      <button
+        onclick="downloadPDF()"
+        id="exportBtn"
+        class="btn btn-dark rounded-4 px-4 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-2"
+      >
+        <i class="bi bi-file-earmark-pdf-fill text-danger"></i> Export Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Dynamic KPI Summary Matrix -->
+  <div class="row g-3 g-md-4 mb-4">
+    <!-- Card 1: Efficiency -->
+    <div class="col-6 col-lg-3">
+      <div
+        class="custom-card d-flex align-items-center justify-content-between"
+      >
+        <div>
+          <span
+            class="text-uppercase text-muted fw-bold d-block mb-1"
+            style="font-size: 0.65rem; letter-spacing: 0.05em"
+            >Efficiency Rate</span
+          >
+          <h2 class="fw-extrabold text-dark m-0" id="kpi-efficiency">88%</h2>
+        </div>
+        <div
+          class="kpi-icon-box"
+          style="background-color: #eeebff; color: #4f46e5"
+        >
+          <i class="bi bi-lightning-charge-fill"></i>
+        </div>
+      </div>
+    </div>
+    <!-- Card 2: Hours Invested -->
+    <div class="col-6 col-lg-3">
+      <div
+        class="custom-card d-flex align-items-center justify-content-between"
+      >
+        <div>
+          <span
+            class="text-uppercase text-muted fw-bold d-block mb-1"
+            style="font-size: 0.65rem; letter-spacing: 0.05em"
+            >Total Invested</span
+          >
+          <h2 class="fw-extrabold text-dark m-0" id="kpi-hours">
+            128<span class="fs-6 fw-medium text-muted ms-1">hrs</span>
+          </h2>
+        </div>
+        <div
+          class="kpi-icon-box"
+          style="background-color: #dcfce7; color: #15803d"
+        >
+          <i class="bi bi-clock-history"></i>
+        </div>
+      </div>
+    </div>
+    <!-- Card 3: Knowledge Pool -->
+    <div class="col-6 col-lg-3">
+      <div
+        class="custom-card d-flex align-items-center justify-content-between"
+      >
+        <div>
+          <span
+            class="text-uppercase text-muted fw-bold d-block mb-1"
+            style="font-size: 0.65rem; letter-spacing: 0.05em"
+            >Retention Index</span
+          >
+          <h2 class="fw-extrabold text-dark m-0" id="kpi-retention">94%</h2>
+        </div>
+        <div
+          class="kpi-icon-box"
+          style="background-color: #e0f2fe; color: #0369a1"
+        >
+          <i class="bi bi-brain-fill"></i>
+        </div>
+      </div>
+    </div>
+    <!-- Card 4: Total Experience -->
+    <div class="col-6 col-lg-3">
+      <div
+        class="custom-card d-flex align-items-center justify-content-between"
+      >
+        <div>
+          <span
+            class="text-uppercase text-muted fw-bold d-block mb-1"
+            style="font-size: 0.65rem; letter-spacing: 0.05em"
+            >Total Experience</span
+          >
+          <h2 class="fw-extrabold text-dark m-0" id="kpi-xp">2,450</h2>
+        </div>
+        <div
+          class="kpi-icon-box"
+          style="background-color: #fef3c7; color: #b45309"
+        >
+          <i class="bi bi-award-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytical Multi-Axis Charts Row -->
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="custom-card">
+        <h6 class="fw-bold mb-3 text-dark small text-uppercase tracking-wider">
+          Performance Trend
+        </h6>
+        <div class="chart-container"><canvas id="lineChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="custom-card">
+        <h6 class="fw-bold mb-3 text-dark small text-uppercase tracking-wider">
+          Skill Mapping Architecture
+        </h6>
+        <div class="chart-container"><canvas id="radarChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="custom-card">
+        <h6 class="fw-bold mb-3 text-dark small text-uppercase tracking-wider">
+          Curriculum Path Breakdown
+        </h6>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historical & Real-time Live Stream Layout -->
+  <div class="row g-4 mb-4">
+    <!-- Left: Detailed Table Ledger -->
+    <div class="col-12 col-lg-8">
+      <div class="custom-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h6 class="fw-bold text-dark m-0">Detailed Academic Path History</h6>
+          <span
+            class="badge bg-light text-secondary border px-2.5 py-1.5 rounded-3 fw-semibold small"
+            >Live Tracking</span
+          >
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr
+                class="border-bottom text-muted"
+                style="font-size: 0.725rem; text-transform: uppercase"
+              >
+                <th class="pb-3 ps-0">Academic Module</th>
+                <th class="pb-3">Time Invested</th>
+                <th class="pb-3">Metric Score</th>
+                <th class="pb-3 pe-0">Completion Progression</th>
+              </tr>
+            </thead>
+            <tbody class="border-0">
+              {% for entry in [('Calculus Integration', '2.5h', '95', '100%'),
+              ('Python Frameworks', '3.0h', '88', '75%'), ('Quantum Physics
+              Basics', '1.5h', '76', '45%')] %}
+              <tr>
+                <td class="py-3 ps-0 fw-semibold text-dark">{{ entry.0 }}</td>
+                <td class="py-3 text-secondary">{{ entry.1 }}</td>
+                <td class="py-3">
+                  <span
+                    class="badge rounded-pill fw-bold {% if entry.2|int >= 90 %}bg-success-subtle text-success{% else %}bg-primary-subtle text-primary{% endif %} px-3 py-1.5"
+                    style="font-size: 0.75rem"
+                  >
+                    {{ entry.2 }} / 100
+                  </span>
+                </td>
+                <td class="py-3 pe-0">
+                  <div class="d-flex align-items-center gap-3">
+                    <div
+                      class="progress flex-grow-1"
+                      style="
+                        height: 6px;
+                        min-width: 80px;
+                        background-color: #f1f5f9;
+                      "
+                    >
+                      <div
+                        class="progress-bar {% if entry.3 == '100%' %}bg-success{% else %}bg-primary{% endif %} rounded-pill"
+                        style="width: {{ entry.3 }};"
+                      ></div>
+                    </div>
+                    <span
+                      class="small fw-bold text-dark text-nowrap"
+                      style="font-size: 0.8rem"
+                      >{{ entry.3 }}</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Stream Activity Node Timeline -->
+    <div class="col-12 col-lg-4">
+      <div class="custom-card">
+        <h6 class="fw-bold mb-4 text-dark">Live Activity Feed</h6>
+        <div class="timeline-stream">
+          <div class="timeline-node">
+            <h6 class="fw-bold mb-1 text-dark small">
+              Finished Core Math Milestone
+            </h6>
+            <p class="text-muted mb-0 small" style="font-size: 0.8rem">
+              Automated checking system criteria complete.
+            </p>
+            <small class="text-primary fw-medium" style="font-size: 0.7rem"
+              ><i class="bi bi-clock me-1"></i>2 hours ago</small
+            >
+          </div>
+          <div class="timeline-node" style="margin-bottom: 0">
+            <h6 class="fw-bold mb-1 text-dark small">
+              Initialized Structured SQL Query Session
+            </h6>
+            <p class="text-muted mb-0 small" style="font-size: 0.8rem">
+              Relational model database schema open.
+            </p>
+            <small class="text-primary fw-medium" style="font-size: 0.7rem"
+              ><i class="bi bi-clock me-1"></i>5 hours ago</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARU! Predictive AI Learning Assistant Banner -->
+  <div
+    class="ai-insight-banner d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4"
+  >
+    <div class="d-flex align-items-start gap-3">
+      <div class="fs-1 text-warning animate-pulse">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div>
+        <h5 class="fw-bold text-white mb-1">
+          AI Graduation & Capability Projection
+        </h5>
+        <p class="text-white-50 m-0 small" style="max-width: 680px">
+          Based on your stable
+          <strong class="text-white">88% Efficiency</strong> trend this week,
+          you are projected to complete the entire Computational Engineering
+          program track 12 days ahead of schedule. Keep up the pace!
+        </p>
+      </div>
+    </div>
+    <div class="text-md-end text-nowrap">
+      <span class="text-white-50 d-block small text-uppercase tracking-wider"
+        >Target Completion</span
+      >
+      <h4 class="fw-extrabold text-warning m-0">Early August 2026</h4>
+    </div>
+  </div>
+</div>
+
+<!-- Core Engineering Script Plugins -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+  let currentLineChart, currentRadarChart, currentPieChart;
+  const gridStyling = { color: "#f1f5f9", drawTicks: false };
+
+  // Dataset Mock Data untuk Simulasi Timeframe Switcher
+  const datasets = {
+    month: {
+      kpi: { eff: "88%", hours: "128", ret: "94%", xp: "2,450" },
+      line: [70, 78, 82, 85, 92, 95],
+      radar: [90, 75, 85, 60, 80],
+      pie: [65, 35],
+    },
+    all: {
+      kpi: { eff: "91%", hours: "512", ret: "96%", xp: "9,820" },
+      line: [55, 64, 75, 81, 88, 91],
+      radar: [95, 88, 90, 75, 85],
+      pie: [80, 20],
+    },
+  };
+
+  // Engine Inisialisasi Grafik
+  function renderCharts(timeframe) {
+    const data = datasets[timeframe];
+
+    // Config 1: Line Chart
+    if (currentLineChart) currentLineChart.destroy();
+    const ctxLine = document.getElementById("lineChart").getContext("2d");
+    const gradientLine = ctxLine.createLinearGradient(0, 0, 0, 240);
+    gradientLine.addColorStop(0, "rgba(79, 70, 229, 0.12)");
+    gradientLine.addColorStop(1, "rgba(79, 70, 229, 0.0)");
+
+    currentLineChart = new Chart(ctxLine, {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Performance",
+            data: data.line,
+            borderColor: "#4f46e5",
+            borderWidth: 3,
+            fill: true,
+            backgroundColor: gradientLine,
+            tension: 0.35,
+            pointBackgroundColor: "#ffffff",
+            pointBorderColor: "#4f46e5",
+            pointBorderWidth: 2,
+            pointRadius: 4,
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: gridStyling, border: { dash: [5, 5] } },
+        },
+      },
+    });
+
+    // Config 2: Radar Chart
+    if (currentRadarChart) currentRadarChart.destroy();
+    currentRadarChart = new Chart(document.getElementById("radarChart"), {
+      type: "radar",
+      data: {
+        labels: ["Math", "Code", "Physics", "Design", "Logic"],
+        datasets: [
+          {
+            label: "Capabilities Index",
+            data: data.radar,
+            backgroundColor: "rgba(6, 182, 212, 0.12)",
+            borderColor: "#06b6d4",
+            borderWidth: 2,
+            pointRadius: 3,
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          r: {
+            grid: { color: "#e2e8f0" },
+            angleLines: { color: "#e2e8f0" },
+            ticks: { display: false },
+          },
+        },
+      },
+    });
+
+    // Config 3: Doughnut Chart
+    if (currentPieChart) currentPieChart.destroy();
+    currentPieChart = new Chart(document.getElementById("pieChart"), {
+      type: "doughnut",
+      data: {
+        labels: ["Finished Tracks", "In Progress Path"],
+        datasets: [
+          {
+            data: data.pie,
+            backgroundColor: ["#10b981", "#4f46e5"],
+            borderWidth: 4,
+            borderColor: "#ffffff",
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { boxWidth: 10, font: { weight: 600 } },
+          },
+        },
+        cutout: "75%",
+      },
+    });
+  }
+
+  // Aksi Kontrol Pengubah Timeframe (Tab Switcher)
+  function changeTimeframe(type) {
+    // Ubah status active pada tombol
+    const btns = document.querySelectorAll("#timeframeTabs button");
+    btns.forEach((btn) => btn.classList.remove("active"));
+    event.currentTarget.classList.add("active");
+
+    // Update Angka Matrix KPI dengan animasi transisi
+    const target = datasets[type].kpi;
+    document.getElementById("kpi-efficiency").innerText = target.eff;
+    document.getElementById("kpi-hours").innerHTML =
+      `${target.hours}<span class="fs-6 fw-medium text-muted ms-1">hrs</span>`;
+    document.getElementById("kpi-retention").innerText = target.ret;
+    document.getElementById("kpi-xp").innerText = parseInt(
+      target.xp,
+    ).toLocaleString();
+
+    // Re-render grafik agar sinkron
+    renderCharts(type);
+  }
+
+  // Engine Export Dokumen PDF Profesional + Loading State
+  function downloadPDF() {
+    const btn = document.getElementById("exportBtn");
+    const originalHtml = btn.innerHTML;
+
+    // Tampilkan Loading State pada tombol
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm text-light" role="status"></span> Generating...`;
+
+    const targetElement = document.getElementById("dashboard-content");
+
+    html2pdf()
+      .set({
+        filename: "Executive_Learning_Report_2026.pdf",
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css"] },
+      })
+      .from(targetElement)
+      .save()
+      .then(() => {
+        // Kembalikan tombol ke kondisi semula setelah proses selesai
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      });
+  }
+
+  // Booting sistem pertama kali saat halaman dimuat
+  document.addEventListener("DOMContentLoaded", function () {
+    renderCharts("month");
+  });
+</script>
+{% endblock %}

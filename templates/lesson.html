@@ -1,0 +1,511 @@
+{% extends 'base.html' %} {% block title %}{{ lesson.title }} - EduSmart
+Learning{% endblock %} {% block content %}
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-light: #eff6ff;
+    --primary-dark: #1d4ed8;
+    --accent: #f59e0b;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --bg-surface: #ffffff;
+    --border-soft: #f1f5f9;
+  }
+
+  /* 1. Header & Hero Decor */
+  .lesson-header-bg {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+    border: 1px solid var(--border-soft);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 2. Custom Sidebar & Active States */
+  .resource-card {
+    border: 1px solid var(--border-soft);
+    background-color: var(--bg-surface);
+  }
+
+  .btn-resource {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--border-soft);
+    color: var(--text-muted);
+    background-color: var(--bg-surface);
+  }
+
+  .btn-resource:hover {
+    background-color: #f8fafc;
+    color: var(--primary);
+    border-color: rgba(59, 130, 246, 0.2);
+    transform: translateX(4px);
+  }
+
+  .btn-resource.active-resource {
+    background-color: var(--primary) !important;
+    color: #ffffff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  /* 3. Global Cards Micro-interaction */
+  .hover-lift {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--border-soft);
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04) !important;
+  }
+
+  /* 4. Sidebar Tip Decorative box */
+  .study-tip-box {
+    background-color: #f8fafc;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+  }
+
+  /* 5. Custom Form Controls */
+  .custom-textarea {
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    resize: none;
+  }
+  .custom-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* 6. Video Embed Styling Wrapper */
+  .video-wrapper {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-soft);
+  }
+
+  /* 7. Timeline Checklist */
+  .task-check {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .task-check:checked + label {
+    text-decoration: line-through;
+    color: #94a3b8 !important;
+  }
+</style>
+
+<div class="container-fluid py-4 px-3 px-md-5">
+  <div class="p-4 p-md-5 rounded-4 lesson-header-bg mb-4 shadow-sm">
+    <div class="row align-items-center g-3">
+      <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item">
+              <a
+                href="/"
+                class="text-decoration-none fw-medium"
+                style="color: var(--primary)"
+                >Dashboard</a
+              >
+            </li>
+            <li
+              class="breadcrumb-item active text-truncate"
+              aria-current="page"
+              style="color: var(--text-muted); max-width: 250px"
+            >
+              {{ lesson.title }}
+            </li>
+          </ol>
+        </nav>
+        <h1
+          class="display-6 fw-bold tracking-tight mb-2"
+          style="color: var(--text-main)"
+        >
+          {{ lesson.title }}
+        </h1>
+        <p class="mb-0 small" style="color: var(--text-muted)">
+          <i class="bi bi-bookmark-star me-1.5 text-warning"></i> Structured
+          Material Space &bull; Live Syllabus Tracking Connected
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <span
+          class="badge px-3 py-2 rounded-pill bg-white text-dark border shadow-sm fw-semibold"
+        >
+          <span class="p-1 bg-success rounded-circle d-inline-block me-2"></span
+          >Active Module
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 resource-card mb-4">
+        <div class="card-body p-4">
+          <h5
+            class="fw-bold mb-3 d-flex align-items-center"
+            style="color: var(--text-main)"
+          >
+            <i class="bi bi-collection-play me-2.5 text-primary fs-5"></i>
+            Learning Resources
+          </h5>
+          <p class="small mb-4" style="color: var(--text-muted)">
+            Switch between structured modules and text sheets seamlessly.
+          </p>
+
+          <div class="d-flex flex-column gap-2">
+            <a
+              href="/lesson/{{ lesson.id }}?type=video"
+              class="btn w-100 fw-semibold text-start py-2.5 px-3 rounded-3 btn-resource d-flex align-items-center justify-content-between {% if selected_type == 'video' %}active-resource{% endif %}"
+            >
+              <div>
+                <i class="bi bi-play-circle me-2.5 fs-5"></i> Video Masterclass
+              </div>
+              <i class="bi bi-chevron-right small opacity-50"></i>
+            </a>
+
+            <a
+              href="/lesson/{{ lesson.id }}?type=pdf"
+              class="btn w-100 fw-semibold text-start py-2.5 px-3 rounded-3 btn-resource d-flex align-items-center justify-content-between {% if selected_type == 'pdf' %}active-resource{% endif %}"
+            >
+              <div>
+                <i class="bi bi-file-earmark-text me-2.5 fs-5"></i> PDF Reading
+                Materials
+              </div>
+              <i class="bi bi-chevron-right small opacity-50"></i>
+            </a>
+
+            <a
+              href="/lesson/{{ lesson.id }}?type=notes"
+              class="btn w-100 fw-semibold text-start py-2.5 px-3 rounded-3 btn-resource d-flex align-items-center justify-content-between {% if selected_type == 'notes' or not selected_type %}active-resource{% endif %}"
+            >
+              <div>
+                <i class="bi bi-journal-check me-2.5 fs-5"></i> Interactive
+                Notes
+              </div>
+              <i class="bi bi-chevron-right small opacity-50"></i>
+            </a>
+          </div>
+
+          <div class="study-tip-box p-3 mt-4">
+            <div class="d-flex align-items-center gap-2 mb-1.5">
+              <i class="bi bi-lightbulb-fill text-warning fs-5"></i>
+              <span class="fw-bold small" style="color: var(--text-main)"
+                >Pro Learning Strategy</span
+              >
+            </div>
+            <p class="text-secondary small mb-0" style="line-height: 1.6">
+              Apply the <strong>Feynman Method</strong>: review these assets,
+              then summarize them briefly inside the notes panel as if teaching
+              a classmate.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 resource-card">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3" style="color: var(--text-main)">
+            <i class="bi bi-check2-circle text-success me-2"></i>Module
+            Milestone Checklist
+          </h6>
+          <div class="form-check mb-2.5">
+            <input
+              class="form-check-input task-check"
+              type="checkbox"
+              id="check1"
+            />
+            <label
+              class="form-check-label small fw-medium text-dark ms-1"
+              for="check1"
+              >Watch core framework video streams</label
+            >
+          </div>
+          <div class="form-check mb-2.5">
+            <input
+              class="form-check-input task-check"
+              type="checkbox"
+              id="check2"
+            />
+            <label
+              class="form-check-label small fw-medium text-dark ms-1"
+              for="check2"
+              >Read through linked syllabus PDFs</label
+            >
+          </div>
+          <div class="form-check mb-0">
+            <input
+              class="form-check-input task-check"
+              type="checkbox"
+              id="check3"
+            />
+            <label
+              class="form-check-label small fw-medium text-dark ms-1"
+              for="check3"
+              >Submit self-retention study draft summary</label
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
+        <div class="card-body p-4 p-md-5">
+          {% if selected_type == 'video' %}
+          <div>
+            <div
+              class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3"
+            >
+              <div>
+                <h4 class="fw-bold mb-1" style="color: var(--text-main)">
+                  Streaming Facilitation
+                </h4>
+                <p class="small text-muted mb-0">
+                  Watch high-retention cinematic classroom breakdowns.
+                </p>
+              </div>
+              <a
+                href="/video/play/{{ lesson.id }}"
+                class="btn btn-sm btn-outline-primary rounded-pill px-3.5 py-2 fw-semibold"
+              >
+                Maximize Screen
+                <i class="bi bi-arrows-fullscreen ms-1.5 small"></i>
+              </a>
+            </div>
+
+            <div class="row g-4">
+              {% for vid in lesson.videos[:2] %}
+              <div class="col-12">
+                <div class="rounded-4 overflow-hidden video-wrapper bg-black">
+                  <div class="ratio ratio-16x9">
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ vid.id }}"
+                      allowfullscreen
+                      class="border-0"
+                    ></iframe>
+                  </div>
+                </div>
+                <div
+                  class="p-3 bg-light border border-top-0 rounded-bottom-4 mb-2"
+                >
+                  <h6 class="fw-bold mb-0 text-dark d-flex align-items-center">
+                    <i class="bi bi-play-btn-fill text-danger me-2"></i> {{
+                    vid.label }}
+                  </h6>
+                </div>
+              </div>
+              {% else %}
+              <div class="col-12 text-center py-5">
+                <i class="bi bi-camera-video text-muted display-4"></i>
+                <p class="mt-2 text-muted">
+                  No stream logs found for this specific path framework.
+                </p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {% elif selected_type == 'pdf' %}
+          <div>
+            <div
+              class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3"
+            >
+              <div>
+                <h4 class="fw-bold mb-1" style="color: var(--text-main)">
+                  PDF Syllabus Materials
+                </h4>
+                <p class="small text-muted mb-0">
+                  Download digital syllabus files or review structural notes.
+                </p>
+              </div>
+              <input
+                type="text"
+                id="pdfSearch"
+                class="form-control form-control-sm rounded-pill px-3"
+                placeholder="Search reference sheet..."
+                style="max-width: 220px"
+              />
+            </div>
+
+            <div class="row g-3" id="pdfContainer">
+              {% for res in lesson.resources if res.type == 'pdf' %}
+              <div
+                class="col-12 col-md-6 pdf-item"
+                data-label="{{ res.label | lower }}"
+              >
+                <div
+                  class="card rounded-4 p-3 d-flex flex-row align-items-center hover-lift bg-white h-100"
+                >
+                  <div
+                    class="p-3 rounded-3 me-3 d-flex align-items-center justify-content-center"
+                    style="background-color: #fef2f2"
+                  >
+                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4"></i>
+                  </div>
+                  <div class="overflow-hidden">
+                    <a
+                      href="{{ res.pdf_url }}"
+                      target="_blank"
+                      class="text-decoration-none text-dark fw-bold text-truncate d-block mb-1 stretched-link"
+                    >
+                      {{ res.label }}
+                    </a>
+                    <small class="text-muted d-block"
+                      >Click to review resource
+                      <i class="bi bi-box-arrow-up-right ms-1 small"></i
+                    ></small>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <div class="col-12 text-center py-5">
+                <i class="bi bi-folder-x text-muted display-4"></i>
+                <p class="mt-2 text-muted">
+                  No reference sheet vaults linked here currently.
+                </p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {% else %}
+          <div>
+            <h4 class="fw-bold mb-1" style="color: var(--text-main)">
+              Core Structural Review
+            </h4>
+            <p class="small text-muted mb-4">
+              Review core bullet highlights and compile personal lecture
+              summaries.
+            </p>
+
+            <div
+              class="p-4 rounded-4 mb-4 border border-slate-100"
+              style="background-color: #fafafa"
+            >
+              <h6
+                class="fw-bold mb-3 text-uppercase tracking-wider small"
+                style="color: var(--primary)"
+              >
+                Key Takeaways Matrix
+              </h6>
+              <ul class="mb-0 ps-3 d-flex flex-column gap-2.5">
+                {% for bullet in lesson.notes_bullets %}
+                <li style="color: var(--text-muted); line-height: 1.6">
+                  {{ bullet }}
+                </li>
+                {% else %}
+                <li class="text-muted fst-italic">
+                  Standard highlights array is empty for this module block.
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <form
+              action="/save-notes/{{ lesson.id }}"
+              method="POST"
+              class="mt-4"
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <label
+                  class="form-label fw-bold mb-0"
+                  style="color: var(--text-main)"
+                  >My Self-Retention Draft</label
+                >
+                <span class="badge bg-light text-secondary border rounded"
+                  >Saved Locally</span
+                >
+              </div>
+              <textarea
+                name="user_notes"
+                class="form-control custom-textarea rounded-3 p-3 small mb-3"
+                rows="5"
+                placeholder="Structure text descriptions, formulas, or personal thoughts here..."
+              >
+{{ user_notes }}</textarea
+              >
+
+              <button
+                type="submit"
+                class="btn text-white fw-bold px-4 py-2.5 rounded-3 d-inline-flex align-items-center border-0 shadow-sm transition-all"
+                style="background-color: var(--primary)"
+              >
+                <i class="bi bi-cloud-arrow-up me-2 fs-5"></i> Commit Summary
+                Changes
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 bg-white">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-1" style="color: var(--text-main)">
+            <i class="bi bi-chat-left-text text-primary me-2"></i>Classroom Q&A
+            Feed
+          </h5>
+          <p class="small text-muted mb-4">
+            Have an unresolved formula or concept roadblock? Start a thread down
+            below.
+          </p>
+
+          <div class="d-flex gap-3 align-items-start mb-3 border-bottom pb-3">
+            <div
+              class="rounded-circle bg-light text-primary fw-bold d-flex align-items-center justify-content-center flex-shrink-0"
+              style="width: 40px; height: 40px"
+            >
+              AN
+            </div>
+            <div>
+              <h6 class="fw-bold mb-0 small" style="color: var(--text-main)">
+                Alex North
+                <span class="text-muted fw-normal ms-1">&bull; 1 hour ago</span>
+              </h6>
+              <p class="small text-secondary mb-0 mt-1">
+                Does the third PDF cover the calculation methods required for
+                tomorrow's assignment framework?
+              </p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <input
+              type="text"
+              class="form-control form-control-sm rounded-3 py-2"
+              placeholder="Write a response or ask something new..."
+            />
+            <button class="btn btn-sm btn-primary px-3 rounded-3 fw-bold">
+              <i class="bi bi-send"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Live Search for PDFs
+    const searchInput = document.getElementById("pdfSearch");
+    if (searchInput) {
+      searchInput.addEventListener("keyup", function (e) {
+        const value = e.target.value.toLowerCase();
+        const items = document.querySelectorAll(".pdf-item");
+
+        items.forEach((item) => {
+          const label = item.getAttribute("data-label");
+          if (label.includes(value)) {
+            item.style.display = "block";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

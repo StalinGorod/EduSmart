@@ -1,0 +1,988 @@
+{% extends 'base.html' %} {% block title %}Home - EduSmart Learning{% endblock
+%} {% block content %}
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-light: #eff6ff;
+    --primary-dark: #1d4ed8;
+    --accent: #f59e0b;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --bg-surface: #ffffff;
+    --border-soft: #f1f5f9;
+  }
+
+  body {
+    background-color: #fafafa;
+  }
+
+  /* 1. Hero Dynamic Background & Mesh Grid */
+  .hero-gradient-bg {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 50%, #e0f2fe 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-blob {
+    position: absolute;
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.08) 0%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .blob-1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    right: -50px;
+  }
+  .blob-2 {
+    width: 300px;
+    height: 300px;
+    bottom: -50px;
+    left: -50px;
+  }
+
+  /* 2. Premium Hover & Card Transitions */
+  .hover-lift {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--border-soft);
+  }
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px rgba(15, 23, 42, 0.06) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  /* 3. Icon Shapes Custom */
+  .icon-shape {
+    width: 60px;
+    height: 60px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    transition: all 0.3s ease;
+  }
+  .hover-lift:hover .icon-shape {
+    background-color: var(--primary) !important;
+    transform: rotate(5deg) scale(1.05);
+  }
+  .hover-lift:hover .icon-shape i {
+    color: #ffffff !important;
+  }
+
+  /* 4. Timeline Progress Stepper Line */
+  .step-line {
+    position: relative;
+  }
+  @media (min-width: 768px) {
+    .step-line::after {
+      content: "";
+      position: absolute;
+      width: 75%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary) 0%, #e2e8f0 100%);
+      top: 30px;
+      left: 62%;
+      z-index: 1;
+    }
+    .step-item:last-child .step-line::after {
+      display: none;
+    }
+  }
+
+  /* 5. Course Filtering Micro-animations */
+  .course-col {
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .filter-btn {
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+  }
+  .filter-btn.active {
+    background-color: var(--text-main) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  }
+
+  /* 6. Accordion Custom Styling (FAQ) */
+  .custom-accordion .accordion-item {
+    border: 1px solid var(--border-soft);
+    border-radius: 12px !important;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .custom-accordion .accordion-button:not(.collapsed) {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    box-shadow: none;
+  }
+  .custom-accordion .accordion-button {
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  /* 7. CTA Dashboard Gradient Banner */
+  .cta-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    position: relative;
+    overflow: hidden;
+  }
+</style>
+
+<!-- ==========================================
+     1. HERO SECTION (WITH BLOB & GLASSMORPHISM)
+     ========================================== -->
+<div
+  class="row align-items-center g-4 g-lg-5 py-5 my-4 rounded-4 hero-gradient-bg px-4 px-md-5 border border-white shadow-sm position-relative"
+>
+  <div class="hero-blob blob-1"></div>
+  <div class="hero-blob blob-2"></div>
+
+  <div
+    class="col-lg-6 text-center text-lg-start position-relative"
+    style="z-index: 2"
+  >
+    <div
+      class="d-inline-flex align-items-center bg-white border border-light shadow-sm px-3 py-2 rounded-pill mb-4"
+    >
+      <span
+        class="badge px-2 py-1 rounded-pill me-2 text-uppercase"
+        style="
+          background-color: var(--primary);
+          font-size: 0.7rem;
+          letter-spacing: 0.5px;
+        "
+        >✨ Update</span
+      >
+      <small
+        class="fw-semibold"
+        style="font-size: 0.85rem; color: var(--text-main)"
+        >Next-Gen Interactive Platform</small
+      >
+    </div>
+    <h1
+      class="display-4 fw-black lh-base mb-3 tracking-tight style-header"
+      style="color: var(--text-main); font-weight: 850"
+    >
+      Smart Learning for a <br />
+      <span
+        style="
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        "
+        >Brighter Future</span
+      >
+    </h1>
+    <p
+      class="fs-5 mb-4"
+      style="color: var(--text-muted); max-width: 540px; line-height: 1.7"
+    >
+      An adaptive online workspace tailored perfectly for high & middle
+      schoolers. Turn complex formulas and textbooks into visual milestones.
+    </p>
+    <div
+      class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-lg-start"
+    >
+      <a
+        href="#courses"
+        class="btn btn-lg px-4 py-3 text-white fw-bold shadow rounded-3 fs-6"
+        style="background-color: var(--primary); border: none"
+      >
+        Start Learning Now <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+      <a
+        href="#features"
+        class="btn btn-outline-light text-dark border-slate-200 btn-lg px-4 py-3 bg-white rounded-3 fs-6 shadow-sm"
+      >
+        Explore Features
+      </a>
+    </div>
+  </div>
+
+  <div
+    class="col-12 col-sm-10 col-md-8 col-lg-6 mx-auto mt-5 mt-lg-0 position-relative"
+    style="z-index: 2"
+  >
+    <div
+      class="p-4 p-md-5 glass-card rounded-4 shadow-sm border border-white position-relative"
+    >
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex gap-2">
+          <span class="p-1.5 bg-danger rounded-circle"></span>
+          <span class="p-1.5 bg-warning rounded-circle"></span>
+          <span class="p-1.5 bg-success rounded-circle"></span>
+        </div>
+        <span
+          class="badge bg-white text-primary border border-primary-subtle shadow-sm px-3 py-2 rounded-pill small fw-semibold"
+        >
+          <span
+            class="spinner-grow spinner-grow-sm me-1.5 text-primary"
+            role="status"
+          ></span
+          >Live Analytics
+        </span>
+      </div>
+      <h4 class="fw-bold mb-1" style="color: var(--text-main)">
+        Personal Analytics
+      </h4>
+      <p class="small mb-4" style="color: var(--text-muted)">
+        Real-time structural syllabus tracking
+      </p>
+
+      <div class="mb-4">
+        <div class="d-flex justify-content-between small mb-2 fw-medium">
+          <span style="color: var(--text-muted)">Interactive Quizzes</span>
+          <span class="fw-bold" style="color: var(--text-main)"
+            >85% Completed</span
+          >
+        </div>
+        <div class="progress bg-light" style="height: 8px; border-radius: 10px">
+          <div
+            class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            style="
+              width: 85%;
+              background-color: var(--primary);
+              border-radius: 10px;
+            "
+          ></div>
+        </div>
+      </div>
+      <div class="mb-2">
+        <div class="d-flex justify-content-between small mb-2 fw-medium">
+          <span style="color: var(--text-muted)">Live Masterclasses</span>
+          <span class="fw-bold" style="color: var(--text-main)"
+            >12/15 Attended</span
+          >
+        </div>
+        <div class="progress bg-light" style="height: 8px; border-radius: 10px">
+          <div
+            class="progress-bar bg-success"
+            role="progressbar"
+            style="width: 80%; border-radius: 10px"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     2. TRUST COUNTER METRICS
+     ========================================== -->
+<div
+  class="row g-4 text-center py-4 my-5 bg-white border border-slate-100 rounded-4 shadow-sm mx-1 position-relative"
+  style="z-index: 5"
+>
+  <div class="col-4 border-end border-light-subtle">
+    <h2
+      class="fw-black mb-1 display-6"
+      style="color: var(--text-main); font-weight: 800"
+    >
+      10K+
+    </h2>
+    <p
+      class="text-uppercase small mb-0 fw-semibold tracking-wider"
+      style="color: var(--text-muted); font-size: 0.75rem"
+    >
+      Active Students
+    </p>
+  </div>
+  <div class="col-4 border-end border-light-subtle">
+    <h2
+      class="fw-black mb-1 display-6"
+      style="color: var(--text-main); font-weight: 800"
+    >
+      150+
+    </h2>
+    <p
+      class="text-uppercase small mb-0 fw-semibold tracking-wider"
+      style="color: var(--text-muted); font-size: 0.75rem"
+    >
+      Expert Mentors
+    </p>
+  </div>
+  <div class="col-4">
+    <h2
+      class="fw-black mb-1 display-6"
+      style="color: var(--text-main); font-weight: 800"
+    >
+      98%
+    </h2>
+    <p
+      class="text-uppercase small mb-0 fw-semibold tracking-wider"
+      style="color: var(--text-muted); font-size: 0.75rem"
+    >
+      Success Rate
+    </p>
+  </div>
+</div>
+
+<!-- ==========================================
+     3. STEP-BY-STEP WORKFLOW
+     ========================================== -->
+<div class="py-5 my-2">
+  <div class="text-center max-w-xl mx-auto mb-5">
+    <span
+      class="text-uppercase tracking-widest fw-bold small"
+      style="color: var(--primary)"
+      >Simple Workflow</span
+    >
+    <h2 class="fw-bold fs-2 mt-1" style="color: var(--text-main)">
+      How EduSmart Works
+    </h2>
+    <p style="color: var(--text-muted)">
+      Four structured steps to accelerate your standard grade ecosystem.
+    </p>
+  </div>
+  <div class="row g-4 text-center">
+    <div class="col-6 col-md-3 step-item position-relative">
+      <div class="step-line mb-3">
+        <div
+          class="icon-shape bg-white text-dark border fw-bold fs-5 shadow-sm mx-auto position-relative"
+          style="z-index: 2"
+        >
+          1
+        </div>
+      </div>
+      <h6 class="fw-bold" style="color: var(--text-main)">Create Account</h6>
+      <p class="small px-lg-3" style="color: var(--text-muted)">
+        Sign up and personalize your curriculum level targets.
+      </p>
+    </div>
+    <div class="col-6 col-md-3 step-item position-relative">
+      <div class="step-line mb-3">
+        <div
+          class="icon-shape bg-white text-dark border fw-bold fs-5 shadow-sm mx-auto position-relative"
+          style="z-index: 2"
+        >
+          2
+        </div>
+      </div>
+      <h6 class="fw-bold" style="color: var(--text-main)">Interactive Study</h6>
+      <p class="small px-lg-3" style="color: var(--text-muted)">
+        Access modern structural materials instantly anywhere.
+      </p>
+    </div>
+    <div class="col-6 col-md-3 step-item position-relative">
+      <div class="step-line mb-3">
+        <div
+          class="icon-shape bg-white text-dark border fw-bold fs-5 shadow-sm mx-auto position-relative"
+          style="z-index: 2"
+        >
+          3
+        </div>
+      </div>
+      <h6 class="fw-bold" style="color: var(--text-main)">Take Quizzes</h6>
+      <p class="small px-lg-3" style="color: var(--text-muted)">
+        Automated adaptive micro-testing paired with instant analytics.
+      </p>
+    </div>
+    <div class="col-6 col-md-3 step-item position-relative">
+      <div class="step-line mb-3">
+        <div
+          class="icon-shape bg-white text-dark border fw-bold fs-5 shadow-sm mx-auto position-relative"
+          style="z-index: 2"
+        >
+          4
+        </div>
+      </div>
+      <h6 class="fw-bold" style="color: var(--text-main)">Track Milestone</h6>
+      <p class="small px-lg-3" style="color: var(--text-muted)">
+        Easily pinpoint performance weaknesses in real-time.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     4. WHY CHOOSE US CORES
+     ========================================== -->
+<div id="features" class="py-5">
+  <div class="text-center max-w-xl mx-auto mb-5">
+    <h2 class="fw-bold fs-2" style="color: var(--text-main)">
+      Why Choose EduSmart?
+    </h2>
+    <p class="mt-2" style="color: var(--text-muted)">
+      A comprehensive architecture crafted meticulously for modern study.
+    </p>
+  </div>
+
+  <div class="row g-4 text-center">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="p-4 border bg-white rounded-4 h-100 shadow-sm hover-lift">
+        <div
+          class="icon-shape bg-light text-primary mb-4 shadow-sm"
+          style="background-color: var(--primary-light) !important"
+        >
+          <i class="bi bi-book fs-4" style="color: var(--primary)"></i>
+        </div>
+        <h5 class="fw-bold fs-6" style="color: var(--text-main)">
+          Interactive Content
+        </h5>
+        <p class="small mb-0" style="color: var(--text-muted)">
+          Engaging dynamic workspace templates over dry textual worksheets.
+        </p>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="p-4 border bg-white rounded-4 h-100 shadow-sm hover-lift">
+        <div
+          class="icon-shape bg-light text-primary mb-4 shadow-sm"
+          style="background-color: var(--primary-light) !important"
+        >
+          <i class="bi bi-patch-check fs-4" style="color: var(--primary)"></i>
+        </div>
+        <h5 class="fw-bold fs-6" style="color: var(--text-main)">
+          Smart Micro-Quizzes
+        </h5>
+        <p class="small mb-0" style="color: var(--text-muted)">
+          Gamified checkpoint systems integrated with detailed evaluation
+          sheets.
+        </p>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="p-4 border bg-white rounded-4 h-100 shadow-sm hover-lift">
+        <div
+          class="icon-shape bg-light text-primary mb-4 shadow-sm"
+          style="background-color: var(--primary-light) !important"
+        >
+          <i class="bi bi-camera-video fs-4" style="color: var(--primary)"></i>
+        </div>
+        <h5 class="fw-bold fs-6" style="color: var(--text-main)">
+          Live Masterclasses
+        </h5>
+        <p class="small mb-0" style="color: var(--text-muted)">
+          Conversational streams hosted weekly by elite academic facilitators.
+        </p>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="p-4 border bg-white rounded-4 h-100 shadow-sm hover-lift">
+        <div
+          class="icon-shape bg-light text-primary mb-4 shadow-sm"
+          style="background-color: var(--primary-light) !important"
+        >
+          <i
+            class="bi bi-bar-chart-line fs-4"
+            style="color: var(--primary)"
+          ></i>
+        </div>
+        <h5 class="fw-bold fs-6" style="color: var(--text-main)">
+          Progress Engines
+        </h5>
+        <p class="small mb-0" style="color: var(--text-muted)">
+          Syllabus mapping trackers showing clear visual strength breakdowns.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     5. FILTERABLE MODULE CONSOLE
+     ========================================== -->
+<div id="courses" class="py-5">
+  <div
+    class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 text-center text-md-start gap-4"
+  >
+    <div>
+      <h2 class="fw-bold fs-2" style="color: var(--text-main)">
+        Featured Class Modules
+      </h2>
+      <p class="mb-0" style="color: var(--text-muted)">
+        Explore highly popular curated subject paths to secure core grades.
+      </p>
+    </div>
+
+    <div
+      class="bg-white p-1.5 border rounded-pill d-inline-flex gap-1 justify-content-center mx-auto mx-md-0 shadow-sm"
+    >
+      <button
+        class="btn btn-sm rounded-pill px-4 py-2 fw-semibold filter-btn active"
+        data-filter="all"
+      >
+        All Subjects
+      </button>
+      <button
+        class="btn btn-sm text-secondary rounded-pill px-4 py-2 fw-semibold bg-transparent border-0 filter-btn"
+        data-filter="math"
+      >
+        Math
+      </button>
+      <button
+        class="btn btn-sm text-secondary rounded-pill px-4 py-2 fw-semibold bg-transparent border-0 filter-btn"
+        data-filter="science"
+      >
+        Science
+      </button>
+      <button
+        class="btn btn-sm text-secondary rounded-pill px-4 py-2 fw-semibold bg-transparent border-0 filter-btn"
+        data-filter="english"
+      >
+        English
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4" id="courseContainer">
+    <!-- Card Math -->
+    <div class="col-12 col-md-4 course-col" data-category="math">
+      <div
+        class="card h-100 border shadow-sm rounded-4 hover-lift overflow-hidden bg-white"
+      >
+        <div class="card-body p-4 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span
+              class="badge px-3 py-2 rounded-pill fw-semibold"
+              style="
+                color: var(--primary);
+                background-color: var(--primary-light);
+              "
+              >High School</span
+            >
+            <small style="color: var(--text-muted)"
+              ><i class="bi bi-clock me-1.5"></i>12 Lessons</small
+            >
+          </div>
+          <h5
+            class="card-title fw-bold fs-5 mb-2"
+            style="color: var(--text-main)"
+          >
+            Advanced Algebraic Concepts
+          </h5>
+          <p
+            class="card-text small mb-4"
+            style="color: var(--text-muted); line-height: 1.6"
+          >
+            Master quadratic functions, matrices, and complex geometry using
+            clean, modern interactive step-by-step visualizations.
+          </p>
+          <div
+            class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top"
+          >
+            <a
+              href="#"
+              class="btn btn-link text-decoration-none p-0 fw-bold d-flex align-items-center"
+              style="color: var(--primary)"
+            >
+              Start Lesson <i class="bi bi-arrow-right ms-1.5 small"></i>
+            </a>
+            <span
+              class="badge bg-light text-secondary border rounded px-2.5 py-1 small fw-medium"
+              >Hard</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Science -->
+    <div class="col-12 col-md-4 course-col" data-category="science">
+      <div
+        class="card h-100 border shadow-sm rounded-4 hover-lift overflow-hidden bg-white"
+      >
+        <div class="card-body p-4 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span
+              class="badge px-3 py-2 rounded-pill fw-semibold"
+              style="color: #7c3aed; background-color: #f5f3ff"
+              >Middle School</span
+            >
+            <small style="color: var(--text-muted)"
+              ><i class="bi bi-clock me-1.5"></i>8 Lessons</small
+            >
+          </div>
+          <h5
+            class="card-title fw-bold fs-5 mb-2"
+            style="color: var(--text-main)"
+          >
+            Foundations of General Science
+          </h5>
+          <p
+            class="card-text small mb-4"
+            style="color: var(--text-muted); line-height: 1.6"
+          >
+            Dive smoothly into complex ecosystems, atomic weight elements, and
+            straightforward physical physics motion laws.
+          </p>
+          <div
+            class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top"
+          >
+            <a
+              href="#"
+              class="btn btn-link text-decoration-none p-0 fw-bold d-flex align-items-center"
+              style="color: var(--primary)"
+            >
+              Start Lesson <i class="bi bi-arrow-right ms-1.5 small"></i>
+            </a>
+            <span
+              class="badge bg-light text-secondary border rounded px-2.5 py-1 small fw-medium"
+              >Medium</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card English -->
+    <div class="col-12 col-md-4 course-col" data-category="english">
+      <div
+        class="card h-100 border shadow-sm rounded-4 hover-lift overflow-hidden bg-white"
+      >
+        <div class="card-body p-4 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span
+              class="badge px-3 py-2 rounded-pill fw-semibold"
+              style="
+                color: var(--primary);
+                background-color: var(--primary-light);
+              "
+              >High School</span
+            >
+            <small style="color: var(--text-muted)"
+              ><i class="bi bi-clock me-1.5"></i>10 Lessons</small
+            >
+          </div>
+          <h5
+            class="card-title fw-bold fs-5 mb-2"
+            style="color: var(--text-main)"
+          >
+            English Essay & Writing
+          </h5>
+          <p
+            class="card-text small mb-4"
+            style="color: var(--text-muted); line-height: 1.6"
+          >
+            Learn structural critical writing drafts, advanced analysis
+            templates, and modern academic persuasive arguments.
+          </p>
+          <div
+            class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top"
+          >
+            <a
+              href="#"
+              class="btn btn-link text-decoration-none p-0 fw-bold d-flex align-items-center"
+              style="color: var(--primary)"
+            >
+              Start Lesson <i class="bi bi-arrow-right ms-1.5 small"></i>
+            </a>
+            <span
+              class="badge bg-light text-secondary border rounded px-2.5 py-1 small fw-medium"
+              >Easy</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     6. TESTIMONIAL SUITE
+     ========================================== -->
+<div class="py-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold fs-2" style="color: var(--text-main)">
+      What Our Students Say
+    </h2>
+    <p style="color: var(--text-muted)">
+      Verified reviews collected from school users around our digital workspace.
+    </p>
+  </div>
+  <div class="row g-4">
+    <div class="col-12 col-md-4">
+      <div
+        class="p-4 rounded-4 border bg-white shadow-sm h-100 d-flex flex-column justify-content-between hover-lift"
+      >
+        <p
+          class="small fst-italic lh-base mb-4"
+          style="color: var(--text-muted)"
+        >
+          "The progress tracking feature completely saved my study schedule. I
+          finally know exactly what structural modules to review right before my
+          final school exams."
+        </p>
+        <div class="d-flex align-items-center gap-3">
+          <div
+            class="fw-bold rounded-circle d-flex align-items-center justify-content-center"
+            style="
+              width: 44px;
+              height: 44px;
+              background-color: var(--primary-light);
+              color: var(--primary);
+            "
+          >
+            SJ
+          </div>
+          <div>
+            <h6 class="fw-bold mb-0 fs-6" style="color: var(--text-main)">
+              Sarah Jenkins
+            </h6>
+            <small style="color: var(--text-muted)">Grade 11 Student</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div
+        class="p-4 rounded-4 border bg-white shadow-sm h-100 d-flex flex-column justify-content-between hover-lift"
+      >
+        <p class="small lh-base mb-4" style="color: var(--text-muted)">
+          "EduSmart's live interactive classes don't feel like typical boring
+          school lectures at all. They are incredibly conversational, creative,
+          and remarkably easy to follow."
+        </p>
+        <div class="d-flex align-items-center gap-3">
+          <div
+            class="fw-bold rounded-circle d-flex align-items-center justify-content-center"
+            style="
+              width: 44px;
+              height: 44px;
+              background-color: #f5f3ff;
+              color: #7c3aed;
+            "
+          >
+            MT
+          </div>
+          <div>
+            <h6 class="fw-bold mb-0 fs-6" style="color: var(--text-main)">
+              Marcus Thorne
+            </h6>
+            <small style="color: var(--text-muted)">Grade 8 Student</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div
+        class="p-4 rounded-4 border bg-white shadow-sm h-100 d-flex flex-column justify-content-between hover-lift"
+      >
+        <p class="small lh-base mb-4" style="color: var(--text-muted)">
+          "The layout is extremely clean. Studying within the white and baby
+          blue vibe environment keeps me relaxed, calm, and perfectly focused
+          instead of feeling overwhelmed."
+        </p>
+        <div class="d-flex align-items-center gap-3">
+          <div
+            class="fw-bold rounded-circle d-flex align-items-center justify-content-center"
+            style="
+              width: 44px;
+              height: 44px;
+              background-color: #e6fbf1;
+              color: #10b981;
+            "
+          >
+            DM
+          </div>
+          <div>
+            <h6 class="fw-bold mb-0 fs-6" style="color: var(--text-main)">
+              David Miller
+            </h6>
+            <small style="color: var(--text-muted)">Grade 12 Student</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     7. NEW EXPANSION: INTERACTIVE FAQ SECTION
+     ========================================== -->
+<div class="py-5 my-3">
+  <div class="row align-items-center g-5">
+    <div class="col-12 col-lg-5 text-center text-lg-start">
+      <span
+        class="text-uppercase tracking-widest fw-bold small"
+        style="color: var(--primary)"
+        >Common Questions</span
+      >
+      <h2 class="fw-bold fs-2 mt-2 mb-3" style="color: var(--text-main)">
+        Frequently Asked Questions
+      </h2>
+      <p style="color: var(--text-muted); max-width: 400px">
+        Can't find what you are looking for? Reach out directly via our
+        real-time portal help desk support channels.
+      </p>
+    </div>
+    <div class="col-12 col-lg-7">
+      <div class="accordion custom-accordion" id="faqAccordion">
+        <div class="accordion-item shadow-sm">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq1"
+            >
+              Is the curriculum matched with local school boards?
+            </button>
+          </h2>
+          <div
+            id="faq1"
+            class="accordion-collapse collapse"
+            data-bs-parent="#faqAccordion"
+          >
+            <div
+              class="accordion-body text-secondary small"
+              style="line-height: 1.6"
+            >
+              Yes! EduSmart core modules are structured specifically around
+              national educational directives and adaptive standards across
+              Middle and High School brackets.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item shadow-sm">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq2"
+            >
+              Can I access historical streams if I miss live classes?
+            </button>
+          </h2>
+          <div
+            id="faq2"
+            class="accordion-collapse collapse"
+            data-bs-parent="#faqAccordion"
+          >
+            <div
+              class="accordion-body text-secondary small"
+              style="line-height: 1.6"
+            >
+              Absolutely. Every live interactive stream recording drops inside
+              your personal library console vault automatically within 2 hours
+              of completion.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item shadow-sm">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq3"
+            >
+              How do the gamified milestones function?
+            </button>
+          </h2>
+          <div
+            id="faq3"
+            class="accordion-collapse collapse"
+            data-bs-parent="#faqAccordion"
+          >
+            <div
+              class="accordion-body text-secondary small"
+              style="line-height: 1.6"
+            >
+              As you complete materials, micro checkpoint pop quizzes emerge.
+              Completing them locks down points and creates automated weak-point
+              summary review charts.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     8. NEW EXPANSION: METRIC NEWSLETTER & CTA
+     ========================================== -->
+<div class="my-5">
+  <div
+    class="cta-banner rounded-4 p-4 p-md-5 text-center text-white border shadow shadow-lg"
+  >
+    <div
+      class="position-relative"
+      style="z-index: 2; max-width: 600px; margin: 0 auto"
+    >
+      <h3 class="fw-bold fs-3 mb-2">
+        Ready to transform your school workflow?
+      </h3>
+      <p class="opacity-75 small mb-4">
+        Join thousands of students building bulletproof studying behaviors
+        across modular interfaces today.
+      </p>
+      <form class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+        <input
+          type="email"
+          class="form-control rounded-3 border-0 px-3 py-2.5 text-dark small shadow-sm"
+          placeholder="Enter your email address"
+          style="min-width: 280px"
+          required
+        />
+        <button
+          type="submit"
+          class="btn btn-primary fw-bold px-4 py-2.5 rounded-3 border-0 shadow-sm"
+          style="background-color: var(--primary)"
+        >
+          Join Free Program
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     JAVASCRIPT LOGIC UNTUK AKTIVITAS FILTER
+     ========================================== -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const courseCards = document.querySelectorAll(".course-col");
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        filterButtons.forEach((btn) => {
+          btn.classList.remove("active");
+          btn.classList.add("text-secondary", "bg-transparent", "border-0");
+        });
+
+        this.classList.add("active");
+        this.classList.remove("text-secondary", "bg-transparent", "border-0");
+
+        const filterValue = this.getAttribute("data-filter");
+
+        courseCards.forEach((card) => {
+          if (
+            filterValue === "all" ||
+            card.getAttribute("data-category") === filterValue
+          ) {
+            card.style.display = "block";
+            setTimeout(() => {
+              card.style.opacity = "1";
+              card.style.transform = "scale(1)";
+            }, 10);
+          } else {
+            card.style.opacity = "0";
+            card.style.transform = "scale(0.95)";
+            setTimeout(() => {
+              card.style.display = "none";
+            }, 350);
+          }
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

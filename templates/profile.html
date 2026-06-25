@@ -1,0 +1,427 @@
+{% extends 'base.html' %} {% block title %}User Profile | Student Hub{% endblock
+%} {% block content %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+
+<style>
+  body {
+    background-color: #f8fafc;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    color: #1e293b;
+  }
+  .profile-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+  }
+  .avatar-lg {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+  }
+  .skill-badge {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-right: 6px;
+    display: inline-block;
+    margin-bottom: 8px;
+    border: 1px solid #e0e7ff;
+    transition: all 0.2s;
+  }
+  .skill-badge:hover {
+    background: #4f46e5;
+    color: white;
+  }
+  .nav-pills .nav-link {
+    color: #64748b;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    font-weight: 500;
+    transition: 0.3s;
+  }
+  .nav-pills .nav-link:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+  }
+  .nav-pills .nav-link.active {
+    background-color: #6366f1;
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  }
+  .cert-item {
+    display: flex;
+    align-items: center;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    transition: 0.3s;
+  }
+  .cert-item:hover {
+    border-color: #6366f1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transform: translateY(-2px);
+  }
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+</style>
+
+<div class="container py-5">
+  <div class="row">
+    <!-- Sidebar Kiri -->
+    <div class="col-lg-4">
+      <div class="profile-card text-center">
+        <div class="avatar-lg"><i class="fas fa-user-graduate"></i></div>
+        <h4 class="fw-bold mb-1">Budi Santoso</h4>
+        <p class="text-muted mb-3">Computer Science Student</p>
+
+        <div class="mb-4">
+          <span class="skill-badge"
+            ><i class="fab fa-python me-1"></i> Python</span
+          >
+          <span class="skill-badge"
+            ><i class="fab fa-react me-1"></i> React</span
+          >
+          <span class="skill-badge"
+            ><i class="fas fa-palette me-1"></i> UI/UX</span
+          >
+        </div>
+
+        <button
+          class="btn btn-primary w-100 rounded-pill py-2 fw-semibold"
+          data-bs-toggle="modal"
+          data-bs-target="#editModal"
+        >
+          <i class="fas fa-edit me-2"></i>Edit Profile
+        </button>
+      </div>
+
+      <!-- Menu Pengaturan Menggunakan Tab Bootstrap -->
+      <div class="profile-card">
+        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+          Account Settings
+        </h6>
+        <div
+          class="nav flex-column nav-pills"
+          id="v-pills-tab"
+          role="tablist"
+          aria-orientation="vertical"
+        >
+          <button
+            class="nav-link active text-start"
+            id="v-pills-account-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-account"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-user-cog user-tabs-icon me-2"></i> Account Info
+          </button>
+          <button
+            class="nav-link text-start"
+            id="v-pills-security-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-security"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-shield-alt user-tabs-icon me-2"></i> Security &
+            Password
+          </button>
+          <button
+            class="nav-link text-start"
+            id="v-pills-notifications-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-notifications"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-bell user-tabs-icon me-2"></i> Notifications
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Konten Kanan -->
+    <div class="col-lg-8">
+      <div class="tab-content" id="v-pills-tabContent">
+        <!-- TAB: ACCOUNT INFO -->
+        <div
+          class="tab-pane fade show active"
+          id="v-pills-account"
+          role="tabpanel"
+        >
+          <!-- Row Statistik -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="profile-card d-flex align-items-center mb-0">
+                <div class="stat-icon bg-success-subtle text-success me-3">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted small mb-1">Courses Done</h6>
+                  <h3 class="fw-bold mb-0">12</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="profile-card d-flex align-items-center mb-0">
+                <div class="stat-icon bg-primary-subtle text-primary me-3">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted small mb-1">Study Hours</h6>
+                  <h3 class="fw-bold mb-0">148</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="profile-card d-flex align-items-center mb-0">
+                <div class="stat-icon bg-warning-subtle text-warning me-3">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted small mb-1">Current GPA</h6>
+                  <h3 class="fw-bold mb-0">3.85</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel Riwayat Belajar -->
+          <div class="profile-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold mb-0">Learning History</h5>
+              <a
+                href="#"
+                class="btn btn-link btn-sm text-decoration-none fw-semibold"
+                >View All</a
+              >
+            </div>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr class="text-muted small">
+                    <th class="border-0">Course</th>
+                    <th class="border-0">Progress</th>
+                    <th class="border-0">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="fw-semibold">Introduction to AI</td>
+                    <td style="width: 40%">
+                      <div class="d-flex align-items-center">
+                        <span class="me-2 small text-muted">100%</span>
+                        <div class="progress flex-grow-1" style="height: 6px">
+                          <div
+                            class="progress-bar bg-success"
+                            style="width: 100%"
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span
+                        class="badge bg-success-subtle text-success px-3 py-2 rounded-pill"
+                        >Completed</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="fw-semibold">Advanced Software Engineering</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <span class="me-2 small text-muted">65%</span>
+                        <div class="progress flex-grow-1" style="height: 6px">
+                          <div
+                            class="progress-bar bg-warning"
+                            style="width: 65%"
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span
+                        class="badge bg-warning-subtle text-warning px-3 py-2 rounded-pill"
+                        >Active</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sertifikat -->
+          <div class="profile-card">
+            <h5 class="fw-bold mb-4">Certificates</h5>
+            <div class="cert-item">
+              <i class="fas fa-certificate text-warning fa-2x me-3"></i>
+              <div>
+                <div class="fw-bold">Certified AI Practitioner</div>
+                <small class="text-muted"
+                  >Issued by Student Hub • June 2026</small
+                >
+              </div>
+              <button
+                class="btn btn-sm btn-outline-primary ms-auto rounded-pill px-3"
+              >
+                <i class="fas fa-download me-1"></i> Download
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SECURITY (CONTOH DIV BARU) -->
+        <div class="tab-pane fade" id="v-pills-security" role="tabpanel">
+          <div class="profile-card">
+            <h5 class="fw-bold mb-4">Security Settings</h5>
+            <form>
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted"
+                  >Current Password</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="••••••••"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted"
+                  >New Password</label
+                >
+                <input type="password" class="form-control" />
+              </div>
+              <button type="button" class="btn btn-primary rounded-pill px-4">
+                Update Password
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB: NOTIFICATIONS -->
+        <div class="tab-pane fade" id="v-pills-notifications" role="tabpanel">
+          <div class="profile-card">
+            <h5 class="fw-bold mb-4">Notification Preferences</h5>
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="emailNotif"
+                checked
+              />
+              <label class="form-check-label" for="emailNotif"
+                >Email notifications for course updates</label
+              >
+            </div>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="remindNotif"
+                checked
+              />
+              <label class="form-check-label" for="remindNotif"
+                >Daily study reminders</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Profile yang Diperbaiki -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="fw-bold modal-title">Edit Profile</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-shadow="none"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body p-4">
+        <form>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Full Name</label>
+            <input
+              type="text"
+              class="form-control rounded-3"
+              value="Budi Santoso"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted"
+              >Bio / Title</label
+            >
+            <input
+              type="text"
+              class="form-control rounded-3"
+              value="Computer Science Student"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted"
+              >Skills (separated by comma)</label
+            >
+            <input
+              type="text"
+              class="form-control rounded-3"
+              value="Python, React, UI/UX"
+            />
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button
+              type="button"
+              class="btn btn-light w-50 rounded-pill"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary w-50 rounded-pill">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
